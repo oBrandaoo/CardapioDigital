@@ -13,6 +13,7 @@ const messages: Record<string, string> = {
   campos: "Informe um e-mail e uma senha válidos.",
   credenciais: "Não foi possível entrar com esses dados. Confira o e-mail e a senha.",
   convite: "Não foi possível validar o convite. Solicite à equipe um novo link de acesso.",
+  recuperacao: "Não foi possível validar o link de recuperação. Solicite um novo e-mail.",
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
@@ -59,6 +60,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <input id="login-password" name="password" type="password" autoComplete="current-password" required disabled={!configured} />
             <button className="button button-primary" type="submit" disabled={!configured}>Entrar</button>
           </form>
+          <Link className="text-link" href="/recuperar-senha">Esqueci minha senha</Link>
         </section>
 
         <p className="auth-footnote">Contas de músicos e liberação de acesso são gerenciadas internamente pela equipe.</p>

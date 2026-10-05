@@ -104,14 +104,16 @@ export async function updateRequestStatusAction(formData: FormData) {
     redirect("/painel?estado=pedido");
   }
 
-  const { error } = await supabase
+  const update = supabase
     .from("music_requests")
     .update({ status })
     .eq("id", requestId)
-    .eq("musician_id", musicianId)
-    .eq("payment_status", "not_required");
+    .eq("musician_id", musicianId);
+  const { data, error } = status === "cancelled"
+    ? await update.eq("payment_status", "not_required").select("id").maybeSingle()
+    : await update.in("payment_status", ["not_required", "mock_paid", "paid"]).select("id").maybeSingle();
 
-  if (error) redirect("/painel?estado=pedido");
+  if (error || !data) redirect("/painel?estado=pedido");
   revalidatePath("/painel");
   redirect(`/painel?estado=${status === "played" ? "tocada" : "cancelada"}`);
 }

@@ -132,7 +132,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const { data: requests } = performance
     ? await supabase
         .from("music_requests")
-        .select("id, requester_name, price_cents, status, created_at, catalog_songs(title, artist)")
+        .select("id, requester_name, price_cents, payment_status, status, created_at, catalog_songs(title, artist)")
         .eq("performance_id", performance.id)
         .eq("status", "queued")
         .order("created_at", { ascending: true })
@@ -252,8 +252,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             <article className="panel">
               <div className="panel-heading">
-                <div><h2>Fila de pedidos</h2><p>Pedidos gratuitos entram aqui em tempo real.</p></div>
-                <span className="preview-pill">Gratuito</span>
+                <div><h2>Fila de pedidos</h2><p>Pedidos pagos aparecem após a confirmação do pagamento.</p></div>
+                <span className="preview-pill">Grátis e pagos</span>
               </div>
               {pendingRequests.length === 0 ? (
                 <div className="empty-queue">
@@ -269,7 +269,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       const song = Array.isArray(request.catalog_songs) ? request.catalog_songs[0] : request.catalog_songs;
                       return (
                         <tr key={request.id}>
-                          <td><strong>{song?.title ?? "Música do catálogo"}</strong><br /><span>{song?.artist ?? ""}</span></td>
+                          <td>
+                            <strong>{song?.title ?? "Música do catálogo"}</strong><br />
+                            <span>{song?.artist ?? ""}</span><br />
+                            <span className="request-payment-label">
+                              {request.payment_status === "mock_paid" ? "Pagamento simulado" : request.payment_status === "paid" ? "Pago" : "Gratuito"}
+                              {request.price_cents > 0 && ` · ${(request.price_cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`}
+                            </span>
+                          </td>
                           <td>{request.requester_name || "Público"}</td>
                           <td>
                             <div className="request-row-actions">
@@ -278,11 +285,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                                 <input type="hidden" name="status" value="played" />
                                 <button className="button button-primary button-small" type="submit">Tocada</button>
                               </form>
-                              <form action={updateRequestStatusAction}>
-                                <input type="hidden" name="request_id" value={request.id} />
-                                <input type="hidden" name="status" value="cancelled" />
-                                <button className="button button-outline button-small" type="submit">Cancelar</button>
-                              </form>
+                              {request.payment_status === "not_required" && (
+                                <form action={updateRequestStatusAction}>
+                                  <input type="hidden" name="request_id" value={request.id} />
+                                  <input type="hidden" name="status" value="cancelled" />
+                                  <button className="button button-outline button-small" type="submit">Cancelar</button>
+                                </form>
+                              )}
                             </div>
                           </td>
                         </tr>

@@ -6,6 +6,7 @@ Estas regras registram decisões de produto do Cardápio Musical. Trate a seçã
 
 1. **Produto web responsivo, mobile-first.** O público acessa a página pública do músico/apresentação por QR code, sem login. O músico entra em uma área autenticada. Aplicativos nativos não fazem parte do escopo inicial.
 2. **Catálogo centralizado.** Músicas e cifras vêm de um catálogo central mantido pela plataforma em seu próprio banco de dados. O músico seleciona músicas desse catálogo para seu repertório/apresentação. Não depender de uma API externa de cifras em tempo de uso e não substituir o catálogo central por cadastros isolados de cada músico.
+   - Cada cifra será armazenada como texto simples (TXT) no banco central e vinculada ao cadastro da música correspondente. A carga e o gerenciamento do acervo serão implementados em uma etapa posterior.
 3. **Acervo inicial pequeno e autorizado.** No início, publicar apenas músicas/cifras revisadas cuja origem e autorização de uso estejam documentadas. Não fazer scraping, copiar cifras de sites públicos ou presumir que algo pode ser republicado por estar disponível na internet.
 4. **Sem áudio no produto inicial.** O produto pode exibir informações de música e cifras aprovadas, mas não toca, transmite nem hospeda gravações. A ausência de áudio não prova que a exibição de letras, partituras, cifras ou arranjos esteja autorizada; bloqueie a publicação de conteúdo sem situação de direitos aprovada.
 5. **Pedidos avulsos.** Cada pedido pago é uma cobrança própria. Não implementar carteira, saldo pré-pago ou créditos acumulados no MVP.
@@ -38,6 +39,7 @@ Estas regras registram decisões de produto do Cardápio Musical. Trate a seçã
 - A recomendação inicial é uma aplicação web em monólito modular, banco relacional e serviços gerenciados. Next.js/TypeScript e Supabase/PostgreSQL são opções recomendadas, mas ainda não foram aprovadas como regras imutáveis; confirmar antes de iniciar implementação que as dependa.
 - Não introduzir microserviços, aplicativo nativo, saldo pré-pago, reprodução de áudio, catálogo ilimitado ou cobrança automática sem pedido explícito do usuário.
 - A razão 50/50 após impostos está definida. Quais impostos incidem e como calculá-los exige validação contábil; o tratamento de tarifas do provedor, reembolsos e chargebacks continua pendente.
+- Um pagamento simulado pode existir somente em desenvolvimento local, deve ter estado próprio distinto de `paid` e não representa cobrança, repasse ou confirmação de provedor. Não habilitar essa simulação em produção.
 - A licença anual será controlada internamente. A forma de cobrança/registro de pagamento da licença continua pendente; não presumir checkout integrado.
 - Contas de músicos são criadas pela equipe após validação interna. Manter o cadastro aberto desativado no provedor de autenticação e não reintroduzir auto cadastro público sem pedido explícito do usuário.
 - A origem/licença e o volume do catálogo inicial continuam pendentes. Estimativas de software não incluem obtenção de direitos, pagamentos de royalties, transcrição, revisão editorial nem carga em massa do acervo.

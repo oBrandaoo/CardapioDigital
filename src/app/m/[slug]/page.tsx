@@ -4,7 +4,7 @@ import { MapPin, Music2, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { getSupabaseConfig } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { submitFreeRequestAction } from "@/app/m/[slug]/actions";
+import { submitSongRequestAction } from "@/app/m/[slug]/actions";
 
 type PublicMusicianPageProps = {
   params: Promise<{ slug: string }>;
@@ -42,11 +42,12 @@ export default async function PublicMusicianPage({ params, searchParams }: Publi
   let musician: { stage_name: string; city: string | null; bio: string | null };
   let hasActiveShow = false;
   let performanceId: string | null = null;
-  let songs: { id: string; title: string; artist: string }[] = [];
-  const freeRequestsReady = Boolean(
+  let songs: { id: string; title: string; artist: string; price_cents: number }[] = [];
+  const requestsReady = Boolean(
     process.env.SUPABASE_SERVICE_ROLE_KEY &&
     (process.env.REQUEST_TOKEN_SECRET?.length ?? 0) >= 32,
   );
+  const mockPaymentsEnabled = process.env.NODE_ENV === "development";
 
   if (!getSupabaseConfig() && slug === "banda-mare") {
     musician = { stage_name: "Banda Maré", city: "Campinas, SP", bio: "Voz e violão · página de demonstração" };
@@ -79,10 +80,9 @@ export default async function PublicMusicianPage({ params, searchParams }: Publi
     if (performance) {
       const { data: repertoire } = await supabase
         .from("repertoire_items")
-        .select("song_id")
+        .select("song_id, price_cents")
         .eq("musician_id", musicianRecord.id)
-        .eq("is_enabled", true)
-        .eq("price_cents", 0);
+        .eq("is_enabled", true);
 
       const songIds = (repertoire ?? []).map((item) => item.song_id);
       if (songIds.length) {
@@ -91,7 +91,11 @@ export default async function PublicMusicianPage({ params, searchParams }: Publi
           .select("id, title, artist")
           .in("id", songIds)
           .order("title", { ascending: true });
-        songs = catalogSongs ?? [];
+        const prices = new Map((repertoire ?? []).map((item) => [item.song_id, item.price_cents]));
+        songs = (catalogSongs ?? []).map((song) => ({
+          ...song,
+          price_cents: prices.get(song.id) ?? 0,
+        }));
       }
     }
   }
@@ -127,7 +131,7 @@ export default async function PublicMusicianPage({ params, searchParams }: Publi
               <h2>Peça uma música</h2>
               <p>{hasActiveShow ? "Escolha entre as músicas deste repertório." : "Os pedidos abrem quando a próxima apresentação começar."}</p>
             </div>
-            <span className="public-free-pill">Gratuito</span>
+            <span className="public-free-pill">Grátis ou até R$ 5</span>
           </div>
 
           {pedido && requestMessages[pedido] && (
@@ -150,20 +154,33 @@ export default async function PublicMusicianPage({ params, searchParams }: Publi
                 <div className="public-song-row" key={song.id}>
                   <span className="public-song-icon"><Music2 size={16} /></span>
                   <span className="public-song-copy"><strong>{song.title}</strong><span>{song.artist}</span></span>
-                  {performanceId && freeRequestsReady ? (
-                    <form action={submitFreeRequestAction}>
+                  {performanceId && requestsReady ? (
+                    <form action={submitSongRequestAction}>
                       <input type="hidden" name="performance_id" value={performanceId} />
                       <input type="hidden" name="song_id" value={song.id} />
                       <input type="hidden" name="slug" value={slug} />
-                      <button className="button button-primary button-small public-request-button" type="submit">Pedir</button>
+                      <button
+                        className="button button-primary button-small public-request-button"
+                        type="submit"
+                        disabled={!requestsReady || (song.price_cents > 0 && !mockPaymentsEnabled)}
+                      >
+                        {song.price_cents === 0 ? "Pedir grátis" : `Pedir · ${(song.price_cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`}
+                      </button>
                     </form>
                   ) : <span className="public-song-note">Pedidos indisponíveis</span>}
+                  {song.price_cents > 0 && !mockPaymentsEnabled && <span className="public-song-note">Cobrança indisponível</span>}
                 </div>
               ))}
             </div>
           )}
 
-          {hasActiveShow && songs.length > 0 && <p className="public-request-hint">Pedidos gratuitos · limite temporário por navegador.</p>}
+          {hasActiveShow && songs.length > 0 && (
+            <p className="public-request-hint">
+              {mockPaymentsEnabled
+                ? "Pedidos pagos só entram na fila após a confirmação do teste. Nenhum valor real será cobrado neste ambiente."
+                : "Pedidos pagos só estarão disponíveis quando a cobrança real estiver configurada. Pedidos gratuitos continuam disponíveis."}
+            </p>
+          )}
         </section>
 
         <p className="public-footer">

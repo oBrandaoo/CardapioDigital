@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Check, Music2, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { addSongToRepertoireAction, removeSongFromRepertoireAction } from "@/app/painel/repertorio/actions";
+import { addSongToRepertoireAction, removeSongFromRepertoireAction, updateRepertoirePriceAction } from "@/app/painel/repertorio/actions";
 import { requireActiveMusician } from "@/lib/auth/require-active-musician";
 
 type RepertoirePageProps = {
@@ -12,6 +12,8 @@ type RepertoirePageProps = {
 const messages: Record<string, string> = {
   adicionada: "Música adicionada ao repertório.",
   removida: "Música removida do repertório.",
+  valor: "Valor inválido. Use um preço entre R$ 0 e R$ 5, com até duas casas decimais.",
+  valor_salvo: "Valor do pedido atualizado.",
   musica: "Não foi possível atualizar o repertório. Atualize a página e tente novamente.",
 };
 
@@ -27,7 +29,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
       .order("title", { ascending: true }),
     supabase
       .from("repertoire_items")
-      .select("id, song_id")
+      .select("id, song_id, price_cents")
       .eq("musician_id", musicianId),
   ]);
 
@@ -77,6 +79,25 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
                       </form>
                     )}
                   </div>
+                  {repertoireItem && (
+                    <form action={updateRepertoirePriceAction} className="repertoire-price-form">
+                      <input type="hidden" name="item_id" value={repertoireItem.id} />
+                      <label>
+                        <span>Valor por pedido (R$)</span>
+                        <input
+                          name="price"
+                          type="number"
+                          min="0"
+                          max="5"
+                          step="0.01"
+                          defaultValue={(repertoireItem.price_cents / 100).toFixed(2)}
+                          required
+                        />
+                      </label>
+                      <button className="button button-outline button-small" type="submit">Salvar valor</button>
+                      <p>R$ 0,00 deixa o pedido gratuito. Máximo de R$ 5,00.</p>
+                    </form>
+                  )}
                   <p className="catalog-version">{song.version_label}</p>
                   <pre className="chord-sheet">{song.chord_sheet}</pre>
                   <p className="rights-footnote"><ShieldCheck size={13} /> Conteúdo revisado para exibição a músicos autenticados.</p>

@@ -1820,6 +1820,11 @@ h3,
   font-size: 12px;
 }
 
+.public-request-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
 .public-request-message {
   margin: 15px 0 0;
   padding: 11px 13px;
@@ -1936,10 +1941,132 @@ h3,
   font-size: 11px;
 }
 
+.request-payment-label {
+  color: #52756b !important;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.request-payment-card {
+  text-align: center;
+}
+
+.request-payment-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin: 4px auto 13px;
+  color: #91652e;
+  background: #fff0dc;
+  border-radius: 17px;
+}
+
+.request-payment-icon.approved {
+  color: #28665c;
+  background: #e3f1eb;
+}
+
+.request-payment-card h1 {
+  margin: 0;
+  color: var(--deep);
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+.request-payment-song {
+  margin: 9px 0 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.request-payment-price {
+  display: block;
+  margin: 13px 0;
+  color: var(--deep);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 28px;
+}
+
+.request-payment-note {
+  margin: 12px 0;
+  color: #6f7d79;
+  font-size: 12px;
+}
+
+.request-payment-submit {
+  width: 100%;
+  min-height: 46px;
+}
+
+.request-payment-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: #52756b;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.repertoire-price-form {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+  margin-top: 17px;
+  padding: 12px;
+  background: #f4f7f5;
+  border: 1px solid #e3ebe7;
+  border-radius: 12px;
+}
+
+.repertoire-price-form label span {
+  display: block;
+  margin-bottom: 4px;
+  color: #60716c;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.repertoire-price-form input {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 9px;
+  color: var(--deep);
+  background: #fff;
+  border: 1px solid #dce5e1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.repertoire-price-form p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #74827d;
+  font-size: 10px;
+}
+
 @media (max-width: 680px) {
   .request-row-actions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .public-song-row {
+    flex-wrap: wrap;
+  }
+
+  .public-song-copy {
+    width: calc(100% - 48px);
+  }
+
+  .public-song-row form,
+  .public-song-row > .public-song-note {
+    margin-left: 45px;
   }
 }
 
