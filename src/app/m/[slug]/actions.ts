@@ -27,9 +27,17 @@ export async function submitSongRequestAction(formData: FormData) {
     p_mock_payment_enabled: process.env.NODE_ENV === "development",
   });
 
+  if (error?.code === "PGRST202" || error?.code === "PGRST203") {
+    redirect(`/m/${slug}?pedido=atualizar_banco`);
+  }
   if (error?.code === "23505") redirect(`/m/${slug}?pedido=duplicado`);
   if (error?.code === "P0001") redirect(`/m/${slug}?pedido=limite`);
-  if (error) redirect(`/m/${slug}?pedido=indisponivel`);
+  if (error?.code === "P0002") redirect(`/m/${slug}?pedido=preparacao`);
+  if (error?.code === "42501") redirect(`/m/${slug}?pedido=atualizar_banco`);
+  if (error) {
+    console.error("Falha em submit_song_request:", error.code);
+    redirect(`/m/${slug}?pedido=indisponivel`);
+  }
   if (!requestId) redirect(`/m/${slug}?pedido=indisponivel`);
 
   const { data: request, error: requestError } = await admin

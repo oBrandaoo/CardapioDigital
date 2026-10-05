@@ -81,6 +81,8 @@ export default async function RequestPaymentPage({ params, searchParams }: Reque
           )}
 
           {estado === "configuracao" && <p className="public-request-message" role="status">O pagamento de teste está indisponível neste ambiente.</p>}
+          {estado === "atualizar_banco" && <p className="public-request-message" role="status">Aplique as migrations de pedidos no Supabase para habilitar este fluxo.</p>}
+          {estado === "preparacao" && <p className="public-request-message" role="status">Não foi possível validar apresentação ativa, licença vigente, perfil público e música aprovada no repertório.</p>}
           {estado === "indisponivel" && <p className="public-request-message" role="status">Não foi possível confirmar este pedido.</p>}
           <Link className="request-payment-back" href={`/m/${slug}`}><ArrowLeft size={15} /> Voltar à página do músico</Link>
         </section>

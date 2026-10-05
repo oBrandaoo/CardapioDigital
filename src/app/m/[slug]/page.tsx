@@ -15,6 +15,8 @@ const requestMessages: Record<string, string> = {
   enviado: "Pedido enviado para a fila do músico.",
   duplicado: "Você já pediu essa música há pouco. Aguarde a vez dela.",
   limite: "Você chegou ao limite temporário de pedidos. Tente novamente daqui a alguns minutos.",
+  atualizar_banco: "O banco ainda não recebeu a atualização do fluxo de pedidos. Aplique as migrations do projeto no Supabase.",
+  preparacao: "O pedido exige perfil público, licença ativa, apresentação aberta e música aprovada no repertório.",
   configuracao: "Os pedidos ainda não estão liberados neste ambiente.",
   indisponivel: "Essa música não está disponível para pedido agora.",
 };

@@ -24,6 +24,10 @@ export async function confirmMockPaymentAction(formData: FormData) {
     p_visitor_token: visitorToken,
   });
 
+  if (error?.code === "PGRST202" || error?.code === "PGRST203" || error?.code === "42501") {
+    redirect(`${paymentUrl}?estado=atualizar_banco`);
+  }
+  if (error?.code === "P0002") redirect(`${paymentUrl}?estado=preparacao`);
   if (error || confirmed !== true) redirect(`${paymentUrl}?estado=indisponivel`);
 
   revalidatePath("/painel");

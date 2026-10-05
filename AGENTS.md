@@ -25,6 +25,7 @@ Estas regras registram decisões de produto do Cardápio Musical. Trate a seçã
 - Uma licença para tocar uma música ao vivo não deve ser presumida como licença para armazenar e exibir sua cifra/letra na plataforma. A equipe deve tratar essas utilizações separadamente e encaminhar dúvidas de direitos ao usuário para validação apropriada.
 - Autorização e pagamento não são sinônimos: não presumir que sempre existe uma taxa fixa por música, nem que o uso é gratuito. Registrar os termos efetivos da autorização/licença concedida para cada conteúdo.
 - Se os direitos de uma música não estiverem claros, não inventar autorização nem publicar o conteúdo: sinalizar o bloqueio e continuar com itens aprovados.
+- Para demonstrações locais, podem ser usados apenas exercícios harmônicos sintéticos criados para o projeto, claramente identificados e sem letras, gravações ou associação com obras de terceiros. Não usar esses dados de teste como catálogo de produção.
 
 ## Segurança e acesso
 
