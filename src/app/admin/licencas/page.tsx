@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { updateLicenseAction } from "@/app/admin/licencas/actions";
+import { inviteMusicianAction, updateLicenseAction } from "@/app/admin/licencas/actions";
 
 type AdminLicensesPageProps = {
   searchParams: Promise<{ estado?: string }>;
@@ -12,6 +12,11 @@ const notices: Record<string, string> = {
   salva: "Controle da licença atualizado.",
   erro: "Não foi possível atualizar essa licença. Confira os dados.",
   periodo: "Para ativar a licença, informe um início e um vencimento válidos.",
+  convite_enviado: "Convite enviado. O músico definirá a própria senha; a licença continua pendente até liberação interna.",
+  convite_validacao: "Confirme que o acesso do músico foi validado internamente.",
+  convite_dados: "Confira o nome artístico e o e-mail informado.",
+  convite_config: "O provisionamento interno não está configurado no servidor.",
+  convite_erro: "Não foi possível enviar o convite. Confira o e-mail e se já existe uma conta.",
 };
 
 function toLocalDateTime(value: string | null | undefined) {
@@ -45,6 +50,27 @@ export default async function AdminLicensesPage({ searchParams }: AdminLicensesP
           <span className="status-live"><ShieldCheck size={13} /> Administração</span>
         </div>
         {estado && notices[estado] && <p className="dashboard-flash" role="status">{notices[estado]}</p>}
+
+        <section className="panel admin-invite-card">
+          <div className="panel-heading">
+            <div><h2>Convidar músico</h2><p>Contas são criadas pela equipe após validar o acesso.</p></div>
+          </div>
+          <form action={inviteMusicianAction} className="admin-invite-form">
+            <label>
+              Nome artístico
+              <input name="stage_name" type="text" minLength={2} maxLength={80} autoComplete="nickname" required />
+            </label>
+            <label>
+              E-mail do músico
+              <input name="email" type="email" maxLength={254} autoComplete="email" required />
+            </label>
+            <label className="invite-validation-checkbox">
+              <input name="access_validated" type="checkbox" value="yes" required />
+              <span>Confirmo que a solicitação de acesso foi validada internamente.</span>
+            </label>
+            <button className="button button-primary button-small" type="submit">Enviar convite</button>
+          </form>
+        </section>
 
         {musicians?.length ? (
           <div className="admin-license-list">
@@ -90,7 +116,7 @@ export default async function AdminLicensesPage({ searchParams }: AdminLicensesP
           <section className="panel catalog-empty-panel">
             <span className="empty-queue-art"><ShieldCheck size={25} /></span>
             <h2>Nenhum músico cadastrado</h2>
-            <p>Contas novas aparecem aqui depois do primeiro cadastro.</p>
+            <p>Depois do convite, a conta e a licença pendente aparecem nesta lista.</p>
           </section>
         )}
       </div>

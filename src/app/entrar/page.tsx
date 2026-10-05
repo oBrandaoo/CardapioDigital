@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Music2, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { signInAction, signUpAction } from "@/app/entrar/actions";
+import { signInAction } from "@/app/entrar/actions";
 import { getSupabaseConfig } from "@/lib/supabase/env";
 
 type LoginPageProps = {
@@ -9,11 +9,10 @@ type LoginPageProps = {
 };
 
 const messages: Record<string, string> = {
-  configuracao: "Conecte este projeto ao Supabase antes de criar uma conta.",
-  campos: "Confira o nome, o e-mail e a senha. A senha precisa ter pelo menos 8 caracteres.",
+  configuracao: "Conecte este projeto ao Supabase antes de entrar.",
+  campos: "Informe um e-mail e uma senha válidos.",
   credenciais: "Não foi possível entrar com esses dados. Confira o e-mail e a senha.",
-  cadastro: "Não foi possível criar a conta. Confira os dados ou tente outro e-mail.",
-  confirmar: "Conta criada. Confira seu e-mail para confirmar o cadastro antes de entrar.",
+  convite: "Não foi possível validar o convite. Solicite à equipe um novo link de acesso.",
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
@@ -31,7 +30,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <div className="auth-intro">
           <span className="artist-avatar auth-avatar"><Music2 size={24} /></span>
           <h1>Entre no ritmo do seu show.</h1>
-          <p>Crie seu perfil, organize o repertório e compartilhe o QR code com o público.</p>
+          <p>Acesse seu painel para organizar o repertório e compartilhar o QR code com o público.</p>
         </div>
 
         {!configured && (
@@ -50,8 +49,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <section className="auth-card">
           <div className="auth-card-heading">
-            <h2>Já tem uma conta?</h2>
-            <p>Acesse seu painel de músico.</p>
+            <h2>Acesso do músico</h2>
+            <p>Use as credenciais fornecidas pela equipe da plataforma.</p>
           </div>
           <form action={signInAction} className="auth-form">
             <label htmlFor="login-email">E-mail</label>
@@ -62,23 +61,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </form>
         </section>
 
-        <section className="auth-card">
-          <div className="auth-card-heading">
-            <h2>Primeira vez por aqui?</h2>
-            <p>Comece com seu perfil de palco.</p>
-          </div>
-          <form action={signUpAction} className="auth-form">
-            <label htmlFor="signup-name">Nome artístico</label>
-            <input id="signup-name" name="stage_name" type="text" autoComplete="nickname" minLength={2} maxLength={80} required disabled={!configured} />
-            <label htmlFor="signup-email">E-mail</label>
-            <input id="signup-email" name="email" type="email" autoComplete="email" required disabled={!configured} />
-            <label htmlFor="signup-password">Senha</label>
-            <input id="signup-password" name="password" type="password" autoComplete="new-password" minLength={8} required disabled={!configured} />
-            <button className="button button-outline" type="submit" disabled={!configured}>Criar conta de músico</button>
-          </form>
-        </section>
-
-        <p className="auth-footnote">O cadastro começa com licença pendente. A equipe ativa o acesso pelo controle interno.</p>
+        <p className="auth-footnote">Contas de músicos e liberação de acesso são gerenciadas internamente pela equipe.</p>
       </div>
     </main>
   );

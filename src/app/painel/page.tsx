@@ -11,7 +11,13 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { closePerformanceAction, createPerformanceAction, setPublicProfileAction, updateRequestStatusAction } from "@/app/painel/actions";
+import {
+  closePerformanceAction,
+  createPerformanceAction,
+  setPublicProfileAction,
+  updateMusicianProfileAction,
+  updateRequestStatusAction,
+} from "@/app/painel/actions";
 import { QueueLiveRefresh } from "@/components/queue-live-refresh";
 import { getSiteUrl, getSupabaseConfig } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -29,6 +35,10 @@ const statusMessages: Record<string, string> = {
   perfil: "Não foi possível atualizar a visibilidade do perfil.",
   publicado: "Seu perfil público está no ar.",
   oculto: "Seu perfil foi ocultado.",
+  perfil_salvo: "Dados do perfil atualizados.",
+  perfil_campos: "Confira o nome artístico, a cidade e a descrição.",
+  endereco_invalido: "Use um endereço com letras minúsculas, números e hífens.",
+  endereco_em_uso: "Esse endereço público já está sendo usado por outro músico.",
   pedido: "Não foi possível atualizar esse pedido.",
   tocada: "Música marcada como tocada.",
   cancelada: "Pedido cancelado.",
@@ -75,7 +85,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const [{ data: musician }, { data: license }] = await Promise.all([
     supabase
       .from("musicians")
-      .select("id, slug, stage_name, city, profile_is_public")
+      .select("id, slug, stage_name, bio, city, profile_is_public")
       .eq("id", musicianId)
       .maybeSingle(),
     supabase
@@ -186,6 +196,58 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   <button className="button button-outline button-small" type="submit">Encerrar apresentação</button>
                 </form>
               )}
+            </article>
+
+            <article className="panel">
+              <div className="panel-heading">
+                <div><h2>Perfil do palco</h2><p>Essas informações aparecem na sua página pública.</p></div>
+              </div>
+              <form action={updateMusicianProfileAction} className="profile-edit-form">
+                <div className="profile-edit-grid">
+                  <label className="profile-edit-field">
+                    <span>Nome artístico</span>
+                    <input
+                      name="stage_name"
+                      type="text"
+                      minLength={2}
+                      maxLength={80}
+                      defaultValue={musician.stage_name}
+                      autoComplete="nickname"
+                      required
+                    />
+                  </label>
+                  <label className="profile-edit-field">
+                    <span>Endereço público</span>
+                    <span className="profile-slug-control">
+                      <span className="profile-slug-prefix">/m/</span>
+                      <input
+                        name="slug"
+                        type="text"
+                        minLength={3}
+                        maxLength={60}
+                        pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        defaultValue={musician.slug}
+                        aria-describedby="profile-slug-help"
+                        required
+                      />
+                    </span>
+                    <small id="profile-slug-help">Use letras minúsculas sem acento, números e hífens.</small>
+                  </label>
+                  <label className="profile-edit-field">
+                    <span>Cidade</span>
+                    <input name="city" type="text" maxLength={100} defaultValue={musician.city ?? ""} />
+                  </label>
+                  <label className="profile-edit-field profile-edit-field-wide">
+                    <span>Descrição</span>
+                    <textarea name="bio" maxLength={500} rows={3} defaultValue={musician.bio ?? ""} />
+                  </label>
+                </div>
+                <div className="profile-edit-actions">
+                  <button className="button button-primary button-small" type="submit">Salvar perfil</button>
+                </div>
+              </form>
             </article>
 
             <article className="panel">

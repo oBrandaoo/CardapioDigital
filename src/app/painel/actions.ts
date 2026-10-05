@@ -51,6 +51,51 @@ export async function setPublicProfileAction(formData: FormData) {
   redirect(`/painel?estado=${shouldPublish ? "publicado" : "oculto"}`);
 }
 
+export async function updateMusicianProfileAction(formData: FormData) {
+  const { supabase, musicianId } = await requireActiveMusician();
+  const readField = (name: string) => {
+    const value = formData.get(name);
+    return typeof value === "string" ? value.trim() : "";
+  };
+  const stageName = readField("stage_name");
+  const slug = readField("slug");
+  const city = readField("city");
+  const bio = readField("bio");
+
+  if (stageName.length < 2 || stageName.length > 80 || city.length > 100 || bio.length > 500) {
+    redirect("/painel?estado=perfil_campos");
+  }
+  if (slug.length < 3 || slug.length > 60 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    redirect("/painel?estado=endereco_invalido");
+  }
+
+  const { data: currentProfile, error: readError } = await supabase
+    .from("musicians")
+    .select("slug")
+    .eq("id", musicianId)
+    .maybeSingle();
+
+  if (readError || !currentProfile) redirect("/painel?estado=perfil");
+
+  const { error } = await supabase
+    .from("musicians")
+    .update({
+      stage_name: stageName,
+      slug,
+      city: city || null,
+      bio: bio || null,
+    })
+    .eq("id", musicianId);
+
+  if (error?.code === "23505") redirect("/painel?estado=endereco_em_uso");
+  if (error) redirect("/painel?estado=perfil");
+
+  revalidatePath("/painel");
+  revalidatePath(`/m/${currentProfile.slug}`);
+  revalidatePath(`/m/${slug}`);
+  redirect("/painel?estado=perfil_salvo");
+}
+
 export async function updateRequestStatusAction(formData: FormData) {
   const { supabase, musicianId } = await requireActiveMusician();
   const requestId = String(formData.get("request_id") ?? "");

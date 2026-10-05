@@ -16,11 +16,17 @@ Aplicação web mobile-first para músicos organizarem uma apresentação e rece
 5. Aplique `supabase/migrations/202610040001_initial_schema.sql` no projeto Supabase.
 6. Inicie o ambiente local com `npm run dev`.
 
+## Contas de músicos
+
+O cadastro público está desativado por decisão do produto. Um administrador autenticado pode convidar músicos em `/admin/licencas` depois de validar internamente o acesso. O convite usa `SUPABASE_SERVICE_ROLE_KEY` apenas no servidor; o músico confirma o convite e define sua própria senha. O gatilho do banco cria o perfil e uma licença anual pendente. A equipe libera o painel pelo controle interno de licenças.
+
+Antes de enviar convites, mantenha desativados os cadastros abertos em Supabase Auth e configure o **Site URL** do Supabase para corresponder a `NEXT_PUBLIC_SITE_URL`. No modelo de e-mail **Invite user**, use um link para `${NEXT_PUBLIC_SITE_URL}/auth/confirm?token_hash={{ .TokenHash }}&type=invite`; essa rota mostra uma confirmação antes de validar o token. O envio depende do provedor de e-mail configurado no Supabase; configure SMTP próprio antes de uso em produção.
+
 Sem Supabase configurado, a página inicial, `/demo` e o perfil de demonstração `/m/banda-mare` continuam disponíveis. Eles não usam músicas ou cifras protegidas.
 
 ## Acesso administrativo
 
-O cadastro cria um perfil de músico e uma licença anual com estado `pending`. Um administrador precisa receber `app_metadata.role = admin` no Supabase Auth e entrar novamente. A área `/admin/licencas` permite ativar, suspender e controlar a validade anual internamente; `/admin/catalogo` mantém o acervo autorizado.
+Um administrador precisa receber `app_metadata.role = admin` no Supabase Auth e entrar novamente. A área `/admin/licencas` permite ativar, suspender e controlar a validade anual internamente; `/admin/catalogo` mantém o acervo autorizado.
 
 O catálogo central ainda não recebe músicas iniciais. Não adicione letras, cifras ou arranjos sem registrar origem, autorização, território e revisão. Apenas músicas aprovadas e válidas no Brasil podem ser consultadas. A cifra completa só é concedida a usuários autenticados; o público recebe apenas título e artista.
 

@@ -15,6 +15,7 @@ Estas regras registram decisões de produto do Cardápio Musical. Trate a seçã
 9. **Acesso condicionado à licença.** Conceder ou renovar o período de acesso conforme o estado da licença registrado internamente e confirmado pelo processo administrativo definido pela plataforma. Manter o controle da licença separado dos pagamentos de pedidos, inclusive no banco de dados e nos relatórios.
 10. **Confirmação confiável de pagamentos.** O estado pago deve vir de webhook validado e/ou consulta autenticada ao provedor. Não liberar pedido pago, comissão ou licença com base apenas no retorno do navegador. Processar notificações de forma idempotente.
 11. **Provedor de pagamento ainda não está fechado.** A integração precisa suportar divisão de um pagamento entre a plataforma e o músico. Mercado Pago é uma opção a avaliar, não uma escolha irreversível. Antes de codificar a integração, confirmar elegibilidade, meios de pagamento, tarifas e comportamento do split.
+12. **Contas de músicos provisionadas internamente.** A equipe da plataforma cria as contas de músicos depois de validar internamente o acesso. Não oferecer cadastro público ou autoatendimento de contas. A criação da conta não substitui a ativação interna da licença anual.
 
 ## Direitos e dados do catálogo
 
@@ -38,6 +39,7 @@ Estas regras registram decisões de produto do Cardápio Musical. Trate a seçã
 - Não introduzir microserviços, aplicativo nativo, saldo pré-pago, reprodução de áudio, catálogo ilimitado ou cobrança automática sem pedido explícito do usuário.
 - A razão 50/50 após impostos está definida. Quais impostos incidem e como calculá-los exige validação contábil; o tratamento de tarifas do provedor, reembolsos e chargebacks continua pendente.
 - A licença anual será controlada internamente. A forma de cobrança/registro de pagamento da licença continua pendente; não presumir checkout integrado.
+- Contas de músicos são criadas pela equipe após validação interna. Manter o cadastro aberto desativado no provedor de autenticação e não reintroduzir auto cadastro público sem pedido explícito do usuário.
 - A origem/licença e o volume do catálogo inicial continuam pendentes. Estimativas de software não incluem obtenção de direitos, pagamentos de royalties, transcrição, revisão editorial nem carga em massa do acervo.
 - O tratamento de reembolso/cancelamento de pedido e a política de pedidos pagos que o músico não consegue tocar ainda precisam ser definidos antes do fluxo de produção.
 

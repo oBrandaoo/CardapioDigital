@@ -1146,6 +1146,96 @@ h3,
   border-radius: 11px;
 }
 
+.profile-edit-form {
+  margin-top: 17px;
+}
+
+.profile-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px 15px;
+}
+
+.profile-edit-field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  color: #40514e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-edit-field input,
+.profile-edit-field textarea {
+  width: 100%;
+  min-height: 43px;
+  padding: 9px 11px;
+  color: var(--ink);
+  background: #fbfcfb;
+  border: 1px solid #ccd9d4;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.profile-edit-field textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.profile-edit-field input:focus,
+.profile-edit-field textarea:focus {
+  outline: 3px solid rgba(49, 120, 108, 0.18);
+  border-color: var(--stage);
+}
+
+.profile-edit-field small {
+  color: #71817c;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.profile-edit-field-wide {
+  grid-column: 1 / -1;
+}
+
+.profile-slug-control {
+  display: flex;
+  align-items: center;
+  min-height: 43px;
+  padding-left: 11px;
+  color: #71817c;
+  background: #f1f5f3;
+  border: 1px solid #ccd9d4;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.profile-slug-control input {
+  min-width: 0;
+  min-height: 41px;
+  padding-left: 4px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+.profile-slug-control:focus-within {
+  outline: 3px solid rgba(49, 120, 108, 0.18);
+  border-color: var(--stage);
+}
+
+.profile-slug-prefix {
+  flex: 0 0 auto;
+}
+
+.profile-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
 .profile-toggle-form {
   margin-top: 16px;
 }
@@ -1338,6 +1428,57 @@ h3,
   gap: 14px;
 }
 
+.admin-invite-card {
+  margin-bottom: 16px;
+}
+
+.admin-invite-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-invite-form > label:not(.invite-validation-checkbox) {
+  display: grid;
+  gap: 6px;
+  color: #53635f;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-invite-form input[type="text"],
+.admin-invite-form input[type="email"] {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: #fbfcfb;
+  border: 1px solid #ccd9d4;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.invite-validation-checkbox {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: flex-start;
+  gap: 8px;
+  color: #53635f;
+  font-size: 11px;
+}
+
+.invite-validation-checkbox input {
+  margin: 2px 0 0;
+  accent-color: var(--stage);
+}
+
+.admin-invite-form > button {
+  grid-column: 1 / -1;
+  justify-self: end;
+}
+
 .admin-license-card {
   padding: 21px;
 }
@@ -1396,6 +1537,19 @@ h3,
 }
 
 @media (max-width: 680px) {
+  .admin-invite-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-invite-form > label:not(.invite-validation-checkbox) {
+    grid-column: 1 / -1;
+  }
+
+  .admin-invite-form > button {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
   .license-admin-form {
     grid-template-columns: 1fr 1fr;
   }
@@ -1798,6 +1952,14 @@ h3,
   .dashboard-header-actions {
     width: 100%;
     flex-wrap: wrap;
+  }
+
+  .profile-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-edit-field-wide {
+    grid-column: auto;
   }
 
   .catalog-grid {

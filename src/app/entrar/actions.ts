@@ -22,30 +22,6 @@ export async function signInAction(formData: FormData) {
   redirect("/painel");
 }
 
-export async function signUpAction(formData: FormData) {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) redirect("/entrar?estado=configuracao");
-
-  const stageName = formValue(formData, "stage_name");
-  const email = formValue(formData, "email").toLowerCase();
-  const password = formValue(formData, "password");
-
-  if (stageName.length < 2 || stageName.length > 80 || !email || password.length < 8) {
-    redirect("/entrar?estado=campos");
-  }
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { stage_name: stageName } },
-  });
-
-  if (error) redirect("/entrar?estado=cadastro");
-  if (data.session) redirect("/painel");
-
-  redirect("/entrar?estado=confirmar");
-}
-
 export async function signOutAction() {
   const supabase = await createSupabaseServerClient();
   if (supabase) await supabase.auth.signOut();
