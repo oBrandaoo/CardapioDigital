@@ -9,6 +9,8 @@ type CatalogListControlsProps = {
   page: number;
   pageCount: number;
   resultCount: number;
+  searchLabel?: string;
+  extraParams?: Record<string, string>;
 };
 
 export function CatalogListControls({
@@ -18,13 +20,18 @@ export function CatalogListControls({
   page,
   pageCount,
   resultCount,
+  searchLabel = "Buscar por título, artista ou compositor",
+  extraParams = {},
 }: CatalogListControlsProps) {
   const formattedCount = new Intl.NumberFormat("pt-BR").format(resultCount);
 
   return (
     <div className="catalog-list-controls">
       <form action={pathname} method="get" className="catalog-search-form" role="search">
-        <label htmlFor={inputId}>Buscar por título, artista ou compositor</label>
+        {Object.entries(extraParams).filter(([, value]) => value).map(([key, value]) => (
+          <input key={key} type="hidden" name={key} value={value} />
+        ))}
+        <label htmlFor={inputId}>{searchLabel}</label>
         <div className="catalog-search-row">
           <input
             id={inputId}
@@ -35,7 +42,7 @@ export function CatalogListControls({
             placeholder="Ex.: nome da música ou artista"
           />
           <button className="button button-primary button-small" type="submit"><Search size={15} /> Buscar</button>
-          {searchTerm && <Link className="button button-outline button-small" href={pathname}>Limpar</Link>}
+          {searchTerm && <Link className="button button-outline button-small" href={catalogPageHref(pathname, "", 1, extraParams)}>Limpar</Link>}
         </div>
       </form>
 
@@ -50,7 +57,7 @@ export function CatalogListControls({
             {page > 1 ? (
               <Link
                 className="button button-outline button-small"
-                href={catalogPageHref(pathname, searchTerm, page - 1)}
+                href={catalogPageHref(pathname, searchTerm, page - 1, extraParams)}
                 aria-label="Página anterior"
               ><ArrowLeft size={14} /> Anterior</Link>
             ) : <span />}
@@ -58,7 +65,7 @@ export function CatalogListControls({
             {page < pageCount ? (
               <Link
                 className="button button-outline button-small"
-                href={catalogPageHref(pathname, searchTerm, page + 1)}
+                href={catalogPageHref(pathname, searchTerm, page + 1, extraParams)}
                 aria-label="Próxima página"
               >Próxima <ArrowRight size={14} /></Link>
             ) : <span />}

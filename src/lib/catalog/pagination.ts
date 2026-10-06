@@ -17,8 +17,11 @@ export function parseCatalogPage(value: SearchParamValue) {
   return Number.isSafeInteger(page) && page > 0 ? page : 1;
 }
 
-export function catalogPageHref(pathname: string, searchTerm: string, page: number) {
+export function catalogPageHref(pathname: string, searchTerm: string, page: number, extraParams: Record<string, string> = {}) {
   const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(extraParams)) {
+    if (value) params.set(key, value);
+  }
   if (searchTerm) params.set("q", searchTerm);
   if (page > 1) params.set("pagina", String(page));
   const query = params.toString();

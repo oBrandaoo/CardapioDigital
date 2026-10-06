@@ -839,6 +839,80 @@ h3,
   border-radius: 19px;
 }
 
+.public-search-open {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.public-search-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 17px;
+  color: var(--stage);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.public-section-heading h1 {
+  margin: 0;
+  color: var(--deep);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.public-search-tabs,
+.public-genre-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.public-search-tabs {
+  margin-top: 22px;
+  border-bottom: 1px solid #e1e9e5;
+}
+
+.public-search-tabs a {
+  flex: 1 0 auto;
+  padding: 0 6px 11px;
+  color: #687a74;
+  border-bottom: 2px solid transparent;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.public-search-tabs a.active {
+  color: var(--deep);
+  border-bottom-color: var(--stage);
+}
+
+.public-genre-list {
+  margin-top: 16px;
+  padding-bottom: 3px;
+}
+
+.public-genre-list a {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  color: #53635f;
+  background: #f3f7f5;
+  border: 1px solid #dae6df;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.public-genre-list a.active {
+  color: #fff;
+  background: var(--stage);
+  border-color: var(--stage);
+}
+
 .public-section-heading {
   display: flex;
   align-items: flex-start;
@@ -1662,6 +1736,31 @@ h3,
   font-size: 11px;
 }
 
+.catalog-genre-form {
+  display: flex;
+  align-items: end;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.catalog-genre-form label {
+  display: grid;
+  flex: 1;
+  gap: 5px;
+  color: #53635f;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.catalog-genre-form input {
+  width: 100%;
+  min-height: 37px;
+  padding: 7px 10px;
+  border: 1px solid #ccd9d4;
+  border-radius: 9px;
+  font: inherit;
+}
+
 @media (max-width: 680px) {
   .catalog-admin-form {
     grid-template-columns: 1fr;
@@ -1675,6 +1774,11 @@ h3,
 
   .catalog-record-foot {
     align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-genre-form {
+    align-items: stretch;
     flex-direction: column;
   }
 }

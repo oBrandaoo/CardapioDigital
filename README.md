@@ -20,7 +20,7 @@ Aplicação web mobile-first para músicos organizarem apresentações e receber
 
 | Quem acessa | Páginas principais | O que faz |
 | --- | --- | --- |
-| Visitante | `/m/[slug]`, pelo QR code | Vê o repertório disponível e pede uma música sem login. |
+| Visitante | `/m/[slug]`, pelo QR code, e `/m/[slug]/musicas` | Pesquisa o catálogo aprovado por gênero e consulta o repertório do cantor. Só pode pedir músicas do repertório, sem login. |
 | Músico | `/painel` e `/painel/repertorio` | Com licença ativa, gerencia perfil, apresentação, repertório, QR code e pedidos. Abre cifras aprovadas em uma página individual. |
 | Equipe administrativa | `/admin`, `/admin/licencas` e `/admin/catalogo` | Convida músicos, controla licenças anuais e mantém o catálogo central autorizado. O acesso vem do perfil `admin`, sem depender da licença de músico. |
 
@@ -43,7 +43,7 @@ As prévias `/demo` e `/demo/publico` funcionam com ou sem Supabase configurado.
 
 Um administrador precisa receber `app_metadata.role = admin` no Supabase Auth e entrar novamente. O login abre `/admin`, que dá acesso à gestão de licenças e ao catálogo. A conta administrativa não precisa de licença anual de músico.
 
-O catálogo central ainda não recebe músicas iniciais. Não adicione letras, cifras ou arranjos sem registrar origem, autorização, território e revisão. Apenas músicas aprovadas e válidas no Brasil podem ser consultadas. A cifra completa só é concedida a usuários autenticados; o público recebe apenas título e artista.
+O catálogo central ainda não recebe músicas iniciais. Não adicione letras, cifras ou arranjos sem registrar origem, autorização, território e revisão. Apenas músicas aprovadas e válidas no Brasil podem ser consultadas. A cifra completa só é concedida a usuários autenticados; o público recebe apenas título, artista e gênero. A migração `202610060001_catalog_genres.sql` adiciona o gênero principal; músicas anteriores ficam como “Não informado” até a equipe classificá-las em `/admin/catalogo`.
 
 ## Limites desta etapa
 

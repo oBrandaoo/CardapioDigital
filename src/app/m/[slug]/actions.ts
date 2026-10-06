@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { normalizeCatalogSearch, parseCatalogPage } from "@/lib/catalog/pagination";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getRequestVisitorToken } from "@/lib/security/request-token";
 
@@ -14,10 +15,23 @@ export async function submitSongRequestAction(formData: FormData) {
   if (!/^[0-9a-f-]{36}$/i.test(performanceId) || !/^[0-9a-f-]{36}$/i.test(songId) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     redirect("/m/banda-mare?pedido=indisponivel");
   }
+  const searchTerm = normalizeCatalogSearch(String(formData.get("search_query") ?? ""))
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const genre = String(formData.get("search_genre") ?? "").trim().slice(0, 80);
+  const page = parseCatalogPage(String(formData.get("search_page") ?? ""));
+  const resultHref = (state: string) => {
+    const params = new URLSearchParams({ pedido: state });
+    if (searchTerm) params.set("q", searchTerm);
+    if (genre) params.set("genero", genre);
+    if (page > 1) params.set("pagina", String(page));
+    return `/m/${slug}/musicas?${params.toString()}`;
+  };
 
   const admin = createSupabaseAdminClient();
   const visitorToken = await getRequestVisitorToken();
-  if (!admin || !visitorToken) redirect(`/m/${slug}?pedido=configuracao`);
+  if (!admin || !visitorToken) redirect(resultHref("configuracao"));
 
   const { data: requestId, error } = await admin.rpc("submit_song_request", {
     p_performance_id: performanceId,
@@ -28,17 +42,17 @@ export async function submitSongRequestAction(formData: FormData) {
   });
 
   if (error?.code === "PGRST202" || error?.code === "PGRST203") {
-    redirect(`/m/${slug}?pedido=atualizar_banco`);
+    redirect(resultHref("atualizar_banco"));
   }
-  if (error?.code === "23505") redirect(`/m/${slug}?pedido=duplicado`);
-  if (error?.code === "P0001") redirect(`/m/${slug}?pedido=limite`);
-  if (error?.code === "P0002") redirect(`/m/${slug}?pedido=preparacao`);
-  if (error?.code === "42501") redirect(`/m/${slug}?pedido=atualizar_banco`);
+  if (error?.code === "23505") redirect(resultHref("duplicado"));
+  if (error?.code === "P0001") redirect(resultHref("limite"));
+  if (error?.code === "P0002") redirect(resultHref("preparacao"));
+  if (error?.code === "42501") redirect(resultHref("atualizar_banco"));
   if (error) {
     console.error("Falha em submit_song_request:", error.code);
-    redirect(`/m/${slug}?pedido=indisponivel`);
+    redirect(resultHref("indisponivel"));
   }
-  if (!requestId) redirect(`/m/${slug}?pedido=indisponivel`);
+  if (!requestId) redirect(resultHref("indisponivel"));
 
   const { data: request, error: requestError } = await admin
     .from("music_requests")
@@ -46,12 +60,12 @@ export async function submitSongRequestAction(formData: FormData) {
     .eq("id", requestId)
     .maybeSingle();
 
-  if (requestError || !request) redirect(`/m/${slug}?pedido=indisponivel`);
+  if (requestError || !request) redirect(resultHref("indisponivel"));
 
   revalidatePath("/painel");
-  revalidatePath(`/m/${slug}`);
+  revalidatePath(`/m/${slug}/musicas`);
   if (request.price_cents > 0 && request.payment_status === "pending") {
     redirect(`/m/${slug}/pedido/${request.id}`);
   }
-  redirect(`/m/${slug}?pedido=enviado`);
+  redirect(resultHref("enviado"));
 }

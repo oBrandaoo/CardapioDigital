@@ -3,7 +3,7 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { CatalogListControls } from "@/components/catalog-list-controls";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { addApprovedSongAction, withdrawSongAction } from "@/app/admin/catalogo/actions";
+import { addApprovedSongAction, updateSongGenreAction, withdrawSongAction } from "@/app/admin/catalogo/actions";
 import {
   CATALOG_PAGE_SIZE,
   firstSearchParam,
@@ -22,6 +22,7 @@ type CatalogAdminPageProps = {
 const notices: Record<string, string> = {
   salva: "Música adicionada ao catálogo aprovado.",
   retirada: "Música retirada do catálogo público.",
+  genero: "Gênero atualizado.",
   campos: "Preencha título, artista, cifra e a referência da autorização; confirme a revisão.",
   erro: "Não foi possível atualizar o catálogo. Confira os dados e tente novamente.",
 };
@@ -46,7 +47,7 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
 
   let songsQuery = supabase
     .from("catalog_songs")
-    .select("id, title, artist, version_label, rights_status, rights_valid_until, updated_at");
+    .select("id, title, artist, genre, version_label, rights_status, rights_valid_until, updated_at");
   if (searchTerm) {
     songsQuery = songsQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
   }
@@ -82,6 +83,9 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
             </label>
             <label>Artista
               <input name="artist" type="text" maxLength={160} required />
+            </label>
+            <label>Gênero principal
+              <input name="genre" type="text" maxLength={80} defaultValue="Sertanejo" required />
             </label>
             <label>Compositores
               <textarea name="composers" rows={2} placeholder="Um nome por linha" />
@@ -142,6 +146,13 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
                       </form>
                     )}
                   </div>
+                  <form action={updateSongGenreAction} className="catalog-genre-form">
+                    <input type="hidden" name="song_id" value={song.id} />
+                    <label>Gênero principal
+                      <input name="genre" type="text" maxLength={80} defaultValue={song.genre} required />
+                    </label>
+                    <button className="button button-outline button-small" type="submit">Salvar gênero</button>
+                  </form>
                 </article>
               ))}
             </div>

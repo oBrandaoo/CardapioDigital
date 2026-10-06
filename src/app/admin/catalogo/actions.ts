@@ -13,6 +13,7 @@ export async function addApprovedSongAction(formData: FormData) {
   const { supabase, adminId } = await requireAdmin();
   const title = value(formData, "title");
   const artist = value(formData, "artist");
+  const genre = value(formData, "genre");
   const versionLabel = value(formData, "version_label") || "Original";
   const originalKey = value(formData, "original_key");
   const chordSheet = value(formData, "chord_sheet");
@@ -28,6 +29,7 @@ export async function addApprovedSongAction(formData: FormData) {
   if (
     title.length < 1 || title.length > 160 ||
     artist.length < 1 || artist.length > 160 ||
+    genre.length < 1 || genre.length > 80 ||
     versionLabel.length > 100 || originalKey.length > 8 ||
     composers.length > 30 || composers.some((composer) => composer.length > 160) ||
     chordSheet.length < 1 || chordSheet.length > 40000 ||
@@ -45,6 +47,7 @@ export async function addApprovedSongAction(formData: FormData) {
   const { error } = await supabase.from("catalog_songs").insert({
     title,
     artist,
+    genre,
     composers,
     version_label: versionLabel,
     original_key: originalKey || null,
@@ -79,4 +82,19 @@ export async function withdrawSongAction(formData: FormData) {
   revalidatePath("/admin/catalogo");
   revalidatePath("/painel/repertorio");
   redirect("/admin/catalogo?estado=retirada");
+}
+
+export async function updateSongGenreAction(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const songId = value(formData, "song_id");
+  const genre = value(formData, "genre");
+  if (!/^[0-9a-f-]{36}$/i.test(songId) || genre.length < 1 || genre.length > 80) {
+    redirect("/admin/catalogo?estado=campos");
+  }
+
+  const { error } = await supabase.from("catalog_songs").update({ genre }).eq("id", songId);
+  if (error) redirect("/admin/catalogo?estado=erro");
+  revalidatePath("/admin/catalogo");
+  revalidatePath("/painel/repertorio");
+  redirect("/admin/catalogo?estado=genero");
 }
