@@ -13,7 +13,7 @@ const steps = [
   {
     icon: Guitar,
     title: "Monte seu repertório",
-    description: "Escolha músicas do catálogo revisado para cada apresentação.",
+    description: "Escolha músicas do catálogo revisado para seu repertório.",
   },
   {
     icon: QrCode,
@@ -27,6 +27,30 @@ const steps = [
   },
 ];
 
+const areas = [
+  {
+    icon: QrCode,
+    name: "Público",
+    description: "Abre a página do músico pelo QR code, escolhe uma música e faz o pedido sem conta.",
+    href: "/demo/publico",
+    action: "Ver prévia do público",
+  },
+  {
+    icon: Guitar,
+    name: "Músico",
+    description: "Entra com a conta criada pela equipe para organizar repertório, apresentação, QR code e fila.",
+    href: "/demo",
+    action: "Ver prévia do músico",
+  },
+  {
+    icon: ShieldCheck,
+    name: "Equipe administrativa",
+    description: "Entra com perfil de administrador para cuidar de contas, licenças e catálogo central.",
+    href: "/entrar",
+    action: "Entrar como equipe",
+  },
+];
+
 export default function Home() {
   return (
     <main>
@@ -36,10 +60,8 @@ export default function Home() {
         </Link>
         <nav className="header-links" aria-label="Navegação principal">
           <a href="#como-funciona">Como funciona</a>
-          <Link className="text-link" href="/m/banda-mare">Ver página pública</Link>
-          <Link className="button button-primary button-small" href="/entrar">
-            Área do músico
-          </Link>
+          <a href="#acessos">Áreas</a>
+          <Link className="button button-primary button-small" href="/entrar">Entrar</Link>
         </nav>
       </header>
 
@@ -54,13 +76,13 @@ export default function Home() {
             </p>
             <div className="hero-actions">
               <Link className="button button-amber" href="/entrar">
-                Acessar como músico <ArrowUpRight size={17} />
+                Entrar na plataforma <ArrowUpRight size={17} />
               </Link>
-              <Link className="button button-outline" href="/m/banda-mare">
-                Ver página do público
+              <Link className="button button-outline" href="/demo/publico">
+                Ver prévia do público
               </Link>
             </div>
-            <p className="hero-note"><strong>Feito para o palco:</strong> repertório, QR code e pedidos em uma só tela.</p>
+            <p className="hero-note">O público usa o QR code. Músicos e equipe entram com contas criadas internamente.</p>
           </div>
 
           <div className="show-preview" aria-label="Prévia da fila de pedidos">
@@ -80,6 +102,22 @@ export default function Home() {
               <span>Catálogo revisado pela plataforma</span>
               <span className="preview-pill">Sem áudio</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="access-section" id="acessos">
+        <div className="section-wrap">
+          <h2 className="section-heading">Quem acessa cada área</h2>
+          <p className="section-intro">Cada pessoa encontra as funções necessárias para o seu papel no show.</p>
+          <div className="access-map">
+            {areas.map(({ icon: Icon, name, description, href, action }) => (
+              <article className="access-row" key={name}>
+                <span className="access-icon"><Icon size={20} /></span>
+                <div className="access-copy"><h3>{name}</h3><p>{description}</p></div>
+                <Link className="access-link" href={href}>{action} <ArrowUpRight size={16} /></Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>

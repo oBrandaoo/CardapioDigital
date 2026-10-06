@@ -21,6 +21,7 @@ import {
 import { QueueLiveRefresh } from "@/components/queue-live-refresh";
 import { getSiteUrl, getSupabaseConfig } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isLicenseActive } from "@/lib/auth/is-license-active";
 import { signOutAction } from "@/app/entrar/actions";
 
 type DashboardPageProps = {
@@ -80,7 +81,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const claims = authData?.claims;
   const musicianId = claims?.sub;
   if (typeof musicianId !== "string") redirect("/entrar");
-  const isAdmin = claims?.app_metadata?.role === "admin";
+  if (claims?.app_metadata?.role === "admin") redirect("/admin");
 
   const [{ data: musician }, { data: license }] = await Promise.all([
     supabase
@@ -105,15 +106,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     );
   }
 
-  const now = Date.now();
-  const licenseActive =
-    license?.status === "active" &&
-    license.starts_at &&
-    license.ends_at &&
-    new Date(license.starts_at).getTime() <= now &&
-    new Date(license.ends_at).getTime() > now;
-
-  if (!licenseActive) return <PendingLicenseState />;
+  if (!isLicenseActive(license)) return <PendingLicenseState />;
 
   const [{ data: performance }, { data: repertoire }] = await Promise.all([
     supabase
@@ -150,7 +143,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <Link href="/" aria-label="Cardápio Musical, início"><Brand /></Link>
           <div className="dashboard-header-actions">
             <Link className="button button-outline button-small" href="/painel/repertorio"><Music2 size={15} /> Repertório</Link>
-            {isAdmin && <Link className="button button-outline button-small" href="/admin/licencas">Administração</Link>}
             <Link className="button button-outline button-small" href="/demo">Ver prévia</Link>
             <form action={signOutAction}><button className="button button-outline button-small" type="submit">Sair</button></form>
           </div>
@@ -158,8 +150,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         <div className="dashboard-title-row">
           <div>
-            <h1>Olá, {musician.stage_name}.</h1>
-            <p>Seu palco e seu repertório, reunidos em um só lugar.</p>
+            <h1>Painel do músico</h1>
+            <p>Olá, {musician.stage_name}. Organize seu show, repertório e pedidos.</p>
           </div>
           <span className="status-live"><ShieldCheck size={13} /> Licença ativa até {licenseEndDate?.toLocaleDateString("pt-BR")}</span>
         </div>

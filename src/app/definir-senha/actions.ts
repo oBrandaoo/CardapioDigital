@@ -9,6 +9,7 @@ export async function setInitialPasswordAction(formData: FormData) {
 
   const { data } = await supabase.auth.getClaims();
   if (typeof data?.claims?.sub !== "string") redirect("/entrar?estado=convite");
+  const destination = data.claims.app_metadata?.role === "admin" ? "/admin" : "/painel";
 
   const password = formData.get("password");
   const confirmation = formData.get("password_confirmation");
@@ -20,5 +21,5 @@ export async function setInitialPasswordAction(formData: FormData) {
   const { error } = await supabase.auth.updateUser({ password });
   if (error) redirect("/definir-senha?estado=erro");
 
-  redirect("/painel");
+  redirect(destination);
 }

@@ -1,11 +1,22 @@
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { CatalogListControls } from "@/components/catalog-list-controls";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { addApprovedSongAction, withdrawSongAction } from "@/app/admin/catalogo/actions";
+import {
+  CATALOG_PAGE_SIZE,
+  firstSearchParam,
+  normalizeCatalogSearch,
+  parseCatalogPage,
+} from "@/lib/catalog/pagination";
 
 type CatalogAdminPageProps = {
-  searchParams: Promise<{ estado?: string }>;
+  searchParams: Promise<{
+    estado?: string | string[];
+    q?: string | string[];
+    pagina?: string | string[];
+  }>;
 };
 
 const notices: Record<string, string> = {
@@ -16,12 +27,33 @@ const notices: Record<string, string> = {
 };
 
 export default async function AdminCatalogPage({ searchParams }: CatalogAdminPageProps) {
-  const { estado } = await searchParams;
+  const params = await searchParams;
+  const estado = firstSearchParam(params.estado) ?? "";
+  const searchTerm = normalizeCatalogSearch(params.q);
+  const requestedPage = parseCatalogPage(params.pagina);
   const { supabase } = await requireAdmin();
-  const { data: songs } = await supabase
+
+  let countQuery = supabase
     .from("catalog_songs")
-    .select("id, title, artist, version_label, rights_status, rights_valid_until, updated_at")
-    .order("updated_at", { ascending: false });
+    .select("id", { count: "exact", head: true });
+  if (searchTerm) {
+    countQuery = countQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
+  }
+  const { count } = await countQuery;
+  const resultCount = count ?? 0;
+  const pageCount = Math.max(1, Math.ceil(resultCount / CATALOG_PAGE_SIZE));
+  const page = Math.min(requestedPage, pageCount);
+
+  let songsQuery = supabase
+    .from("catalog_songs")
+    .select("id, title, artist, version_label, rights_status, rights_valid_until, updated_at");
+  if (searchTerm) {
+    songsQuery = songsQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
+  }
+  const { data: songs } = await songsQuery
+    .order("updated_at", { ascending: false })
+    .order("id", { ascending: true })
+    .range((page - 1) * CATALOG_PAGE_SIZE, page * CATALOG_PAGE_SIZE - 1);
 
   return (
     <main className="dashboard-page">
@@ -30,7 +62,7 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
           <Link href="/" aria-label="Cardápio Musical, início"><Brand /></Link>
           <div className="dashboard-header-actions">
             <Link className="button button-outline button-small" href="/admin/licencas">Licenças</Link>
-            <Link className="button button-outline button-small" href="/painel"><ArrowLeft size={15} /> Voltar</Link>
+            <Link className="button button-outline button-small" href="/admin"><ArrowLeft size={15} /> Administração</Link>
           </div>
         </header>
 
@@ -85,6 +117,14 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
           <div className="dashboard-title-row">
             <div><h2 className="section-heading">Músicas cadastradas</h2><p>Retire do catálogo público quando a autorização expirar ou ficar em dúvida.</p></div>
           </div>
+          <CatalogListControls
+            pathname="/admin/catalogo"
+            inputId="admin-catalog-search"
+            searchTerm={searchTerm}
+            page={page}
+            pageCount={pageCount}
+            resultCount={resultCount}
+          />
           {songs?.length ? (
             <div className="admin-license-list">
               {songs.map((song) => (
@@ -105,6 +145,18 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
                 </article>
               ))}
             </div>
+          ) : searchTerm ? (
+            <section className="panel catalog-empty-panel catalog-search-empty">
+              <span className="empty-queue-art"><ShieldCheck size={25} /></span>
+              <h2>Nenhuma música encontrada</h2>
+              <p>Tente outro título, artista ou compositor.</p>
+            </section>
+          ) : resultCount > 0 ? (
+            <section className="panel catalog-empty-panel catalog-search-empty">
+              <span className="empty-queue-art"><ShieldCheck size={25} /></span>
+              <h2>Não há músicas nesta página</h2>
+              <p>Volte para uma página anterior do catálogo.</p>
+            </section>
           ) : (
             <section className="panel catalog-empty-panel">
               <span className="empty-queue-art"><ShieldCheck size={25} /></span>

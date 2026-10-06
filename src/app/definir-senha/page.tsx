@@ -33,7 +33,7 @@ export default async function SetPasswordPage({ searchParams }: SetPasswordPageP
         <div className="auth-intro">
           <span className="artist-avatar auth-avatar"><KeyRound size={22} /></span>
           <h1>Defina sua senha</h1>
-          <p>Seu acesso foi criado pela equipe. Escolha uma senha para entrar no painel do músico.</p>
+          <p>Escolha uma senha para acessar sua área no Cardápio Musical.</p>
         </div>
 
         {estado && messages[estado] && <div className="auth-alert" role="status">{messages[estado]}</div>}

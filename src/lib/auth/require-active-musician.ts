@@ -1,6 +1,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isLicenseActive } from "@/lib/auth/is-license-active";
 
 export async function requireActiveMusician() {
   const supabase = await createSupabaseServerClient();
@@ -9,6 +10,7 @@ export async function requireActiveMusician() {
   const { data } = await supabase.auth.getClaims();
   const musicianId = data?.claims?.sub;
   if (typeof musicianId !== "string") redirect("/entrar");
+  if (data?.claims?.app_metadata?.role === "admin") redirect("/admin");
 
   const { data: license } = await supabase
     .from("musician_licenses")
@@ -16,14 +18,7 @@ export async function requireActiveMusician() {
     .eq("musician_id", musicianId)
     .maybeSingle();
 
-  const now = Date.now();
-  if (
-    license?.status !== "active" ||
-    !license.starts_at ||
-    !license.ends_at ||
-    new Date(license.starts_at).getTime() > now ||
-    new Date(license.ends_at).getTime() <= now
-  ) {
+  if (!isLicenseActive(license)) {
     redirect("/painel?estado=licenca");
   }
 

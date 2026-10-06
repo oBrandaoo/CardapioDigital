@@ -28,11 +28,12 @@ function toLocalDateTime(value: string | null | undefined) {
 
 export default async function AdminLicensesPage({ searchParams }: AdminLicensesPageProps) {
   const { estado } = await searchParams;
-  const { supabase } = await requireAdmin();
+  const { supabase, adminId } = await requireAdmin();
   const [{ data: musicians }, { data: licenses }] = await Promise.all([
     supabase.from("musicians").select("id, stage_name, slug, created_at").order("created_at", { ascending: false }),
     supabase.from("musician_licenses").select("musician_id, status, starts_at, ends_at, internal_note"),
   ]);
+  const musicianAccounts = (musicians ?? []).filter((musician) => musician.id !== adminId);
   const licenseByMusician = new Map((licenses ?? []).map((license) => [license.musician_id, license]));
 
   return (
@@ -42,7 +43,7 @@ export default async function AdminLicensesPage({ searchParams }: AdminLicensesP
           <Link href="/" aria-label="Cardápio Musical, início"><Brand /></Link>
           <div className="dashboard-header-actions">
             <Link className="button button-outline button-small" href="/admin/catalogo">Catálogo central</Link>
-            <Link className="button button-outline button-small" href="/painel"><ArrowLeft size={15} /> Voltar</Link>
+            <Link className="button button-outline button-small" href="/admin"><ArrowLeft size={15} /> Administração</Link>
           </div>
         </header>
         <div className="dashboard-title-row">
@@ -72,9 +73,9 @@ export default async function AdminLicensesPage({ searchParams }: AdminLicensesP
           </form>
         </section>
 
-        {musicians?.length ? (
+        {musicianAccounts.length ? (
           <div className="admin-license-list">
-            {musicians.map((musician) => {
+            {musicianAccounts.map((musician) => {
               const license = licenseByMusician.get(musician.id);
               return (
                 <article className="panel admin-license-card" key={musician.id}>

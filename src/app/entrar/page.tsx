@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { Music2, ShieldCheck } from "lucide-react";
+import { redirect } from "next/navigation";
+import { KeyRound, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { signInAction } from "@/app/entrar/actions";
 import { getSupabaseConfig } from "@/lib/supabase/env";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type LoginPageProps = {
   searchParams: Promise<{ estado?: string }>;
@@ -19,6 +21,11 @@ const messages: Record<string, string> = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { estado } = await searchParams;
   const configured = Boolean(getSupabaseConfig());
+  const supabase = configured ? await createSupabaseServerClient() : null;
+  const { data: authData } = supabase ? await supabase.auth.getClaims() : { data: null };
+  if (typeof authData?.claims?.sub === "string") {
+    redirect(authData.claims.app_metadata?.role === "admin" ? "/admin" : "/painel");
+  }
 
   return (
     <main className="auth-page">
@@ -29,9 +36,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       <div className="auth-content">
         <div className="auth-intro">
-          <span className="artist-avatar auth-avatar"><Music2 size={24} /></span>
-          <h1>Entre no ritmo do seu show.</h1>
-          <p>Acesse seu painel para organizar o repertório e compartilhar o QR code com o público.</p>
+          <span className="artist-avatar auth-avatar"><KeyRound size={24} /></span>
+          <h1>Entre no Cardápio Musical.</h1>
+          <p>Músicos e equipe usam o mesmo acesso. Cada conta abre sua área após o login.</p>
         </div>
 
         {!configured && (
@@ -50,8 +57,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <section className="auth-card">
           <div className="auth-card-heading">
-            <h2>Acesso do músico</h2>
-            <p>Use as credenciais fornecidas pela equipe da plataforma.</p>
+            <h2>Acesse sua conta</h2>
+            <p>Use o e-mail e a senha da sua conta.</p>
           </div>
           <form action={signInAction} className="auth-form">
             <label htmlFor="login-email">E-mail</label>
@@ -63,7 +70,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <Link className="text-link" href="/recuperar-senha">Esqueci minha senha</Link>
         </section>
 
-        <p className="auth-footnote">Contas de músicos e liberação de acesso são gerenciadas internamente pela equipe.</p>
+        <p className="auth-footnote">Músicos gerenciam shows e repertório. A equipe administra contas, licenças e catálogo. O cadastro público está desativado.</p>
       </div>
     </main>
   );

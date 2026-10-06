@@ -16,10 +16,10 @@ export async function signInAction(formData: FormData) {
   const password = formValue(formData, "password");
   if (!email || !password) redirect("/entrar?estado=campos");
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) redirect("/entrar?estado=credenciais");
 
-  redirect("/painel");
+  redirect(data.user?.app_metadata?.role === "admin" ? "/admin" : "/painel");
 }
 
 export async function signOutAction() {

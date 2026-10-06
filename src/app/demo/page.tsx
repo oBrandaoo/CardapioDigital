@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import {
-  ArrowLeft,
   CircleHelp,
   ClipboardList,
   ExternalLink,
@@ -11,9 +10,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { getSiteUrl } from "@/lib/supabase/env";
 
 export default function DashboardDemo() {
-  const profileUrl = "http://localhost:3000/m/banda-mare";
+  const previewUrl = `${getSiteUrl().replace(/\/+$/, "")}/demo/publico`;
 
   return (
     <main className="dashboard-page">
@@ -25,11 +25,11 @@ export default function DashboardDemo() {
 
         <div className="dashboard-title-row">
           <div>
-            <h1>Boa noite, músico.</h1>
-            <p>Seu palco e seu repertório, reunidos em um só lugar.</p>
+            <h1>Prévia do painel do músico</h1>
+            <p>Exemplo fictício de apresentação, repertório e pedidos.</p>
           </div>
-          <Link className="button button-outline button-small" href="/m/banda-mare">
-            Abrir página pública <ExternalLink size={15} />
+          <Link className="button button-outline button-small" href="/demo/publico">
+            Ver prévia do público <ExternalLink size={15} />
           </Link>
         </div>
 
@@ -92,11 +92,11 @@ export default function DashboardDemo() {
                 <QrCode size={18} color="#31786c" />
               </div>
               <div className="qr-frame">
-                <QRCodeSVG value={profileUrl} size={140} level="M" includeMargin />
+                <QRCodeSVG value={previewUrl} size={140} level="M" includeMargin />
               </div>
-              <span className="qr-url">/m/banda-mare</span>
-              <Link className="button button-primary button-small" href="/m/banda-mare">
-                Ver como público <ExternalLink size={14} />
+              <span className="qr-url">/demo/publico</span>
+              <Link className="button button-primary button-small" href="/demo/publico">
+                Ver prévia do público <ExternalLink size={14} />
               </Link>
             </article>
 
