@@ -24,7 +24,6 @@ export default async function ChordSheetPage({ params, searchParams }: ChordShee
     .select("id, title, artist, composers, version_label, original_key, chord_sheet")
     .eq("id", songId)
     .eq("rights_status", "approved")
-    .contains("rights_territories", ["BR"])
     .maybeSingle();
 
   if (error || !song) notFound();

@@ -77,7 +77,7 @@ export default function DashboardDemo() {
               </div>
               <div className="catalog-admin-callout">
                 <ShieldCheck size={17} />
-                <span>O catálogo está sendo preparado. Só cifras com origem e autorização de uso confirmadas serão publicadas.</span>
+                <span>O catálogo está sendo preparado. Só cifras com autorização de uso confirmada serão publicadas.</span>
               </div>
             </article>
           </section>

@@ -23,6 +23,8 @@ const notices: Record<string, string> = {
   salva: "Música adicionada ao catálogo aprovado.",
   retirada: "Música retirada do catálogo público.",
   genero: "Gênero atualizado.",
+  aprovada: "Música revisada e publicada no catálogo.",
+  rejeitada: "Registro rejeitado e mantido fora do catálogo público.",
   campos: "Preencha título, artista, cifra e a referência da autorização; confirme a revisão.",
   erro: "Não foi possível atualizar o catálogo. Confira os dados e tente novamente.",
 };
@@ -68,10 +70,15 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
         </header>
 
         <div className="dashboard-title-row">
-          <div><h1>Catálogo central</h1><p>Cadastre cifras com origem e autorização documentadas.</p></div>
+          <div><h1>Catálogo central</h1><p>Cadastre cifras com autorização documentada.</p></div>
           <span className="status-live"><ShieldCheck size={13} /> Administração</span>
         </div>
         {estado && notices[estado] && <p className="dashboard-flash" role="status">{notices[estado]}</p>}
+
+        <div className="catalog-import-entry">
+          <div><strong>Importação em lote</strong><p>CSV + arquivos TXT entram como pendentes para revisão individual.</p></div>
+          <Link className="button button-primary button-small" href="/admin/catalogo/importar">Importar músicas</Link>
+        </div>
 
         <section className="panel admin-catalog-form-panel">
           <div className="panel-heading">
@@ -87,12 +94,6 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
             <label>Gênero principal
               <input name="genre" type="text" maxLength={80} defaultValue="Sertanejo" required />
             </label>
-            <label>Compositores
-              <textarea name="composers" rows={2} placeholder="Um nome por linha" />
-            </label>
-            <label>Versão
-              <input name="version_label" type="text" maxLength={100} defaultValue="Original" />
-            </label>
             <label>Tom original
               <input name="original_key" type="text" maxLength={8} placeholder="Opcional" />
             </label>
@@ -102,11 +103,11 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
             <label className="catalog-sheet-field">Cifra autorizada
               <textarea name="chord_sheet" rows={12} maxLength={40000} required placeholder="Cole aqui somente o conteúdo cuja autorização de armazenamento e exibição já foi confirmada." />
             </label>
-            <label className="catalog-sheet-field">Origem ou referência documental
-              <input name="source_reference" type="text" minLength={5} maxLength={1000} required placeholder="Link ou identificador do documento/licença" />
+            <label className="catalog-sheet-field">Referência da autorização
+              <input name="authorization_reference" type="text" minLength={5} maxLength={1000} required placeholder="Link ou identificador do documento/licença" />
             </label>
             <label className="catalog-sheet-field">Base e limites de uso
-              <textarea name="rights_basis" rows={3} maxLength={2000} required placeholder="Titular/licenciante, usos permitidos, território e condições relevantes" />
+              <textarea name="rights_basis" rows={3} maxLength={2000} required placeholder="Titular/licenciante, usos permitidos e condições relevantes" />
             </label>
             <label className="rights-confirmation">
               <input name="rights_confirmed" type="checkbox" value="yes" required />
@@ -137,6 +138,9 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
                     <div><h2>{song.title}</h2><p>{song.artist} · {song.version_label}</p></div>
                     <span className={song.rights_status === "approved" ? "status-live" : "demo-label"}>{song.rights_status}</span>
                   </div>
+                  {song.rights_status === "pending" && (
+                    <Link className="button button-primary button-small catalog-review-link" href={`/admin/catalogo/${song.id}`}>Revisar música</Link>
+                  )}
                   <div className="catalog-record-foot">
                     <span>{song.rights_valid_until ? `Autorização até ${new Date(`${song.rights_valid_until}T12:00:00`).toLocaleDateString("pt-BR")}` : "Sem vencimento informado"}</span>
                     {song.rights_status === "approved" && (
@@ -172,7 +176,7 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
             <section className="panel catalog-empty-panel">
               <span className="empty-queue-art"><ShieldCheck size={25} /></span>
               <h2>O catálogo ainda está vazio</h2>
-              <p>Adicione somente conteúdo com origem e autorização registradas.</p>
+              <p>Adicione somente conteúdo com autorização documentada.</p>
             </section>
           )}
         </section>

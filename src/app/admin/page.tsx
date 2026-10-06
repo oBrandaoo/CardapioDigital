@@ -33,7 +33,7 @@ export default async function AdminHomePage() {
           <Link className="panel admin-home-card" href="/admin/catalogo">
             <span className="admin-home-icon"><BookOpen size={22} /></span>
             <h2>Catálogo central</h2>
-            <p>Cadastre músicas e cifras com a origem e a autorização de uso registradas.</p>
+            <p>Cadastre músicas e cifras com a autorização de uso documentada.</p>
             <span className="admin-home-action">Abrir catálogo <ArrowRight size={15} /></span>
           </Link>
         </section>

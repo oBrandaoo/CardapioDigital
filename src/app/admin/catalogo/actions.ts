@@ -17,7 +17,7 @@ export async function addApprovedSongAction(formData: FormData) {
   const versionLabel = value(formData, "version_label") || "Original";
   const originalKey = value(formData, "original_key");
   const chordSheet = value(formData, "chord_sheet");
-  const sourceReference = value(formData, "source_reference");
+  const authorizationReference = value(formData, "authorization_reference");
   const rightsBasis = value(formData, "rights_basis");
   const composers = value(formData, "composers")
     .split("\n")
@@ -33,7 +33,7 @@ export async function addApprovedSongAction(formData: FormData) {
     versionLabel.length > 100 || originalKey.length > 8 ||
     composers.length > 30 || composers.some((composer) => composer.length > 160) ||
     chordSheet.length < 1 || chordSheet.length > 40000 ||
-    sourceReference.length < 5 || sourceReference.length > 1000 ||
+    authorizationReference.length < 5 || authorizationReference.length > 1000 ||
     rightsBasis.length < 5 || rightsBasis.length > 2000 || !rightsConfirmed
   ) {
     redirect("/admin/catalogo?estado=campos");
@@ -52,9 +52,8 @@ export async function addApprovedSongAction(formData: FormData) {
     version_label: versionLabel,
     original_key: originalKey || null,
     chord_sheet: chordSheet,
-    source_reference: sourceReference,
+    authorization_reference: authorizationReference,
     rights_basis: rightsBasis,
-    rights_territories: ["BR"],
     rights_valid_until: validUntilValue || null,
     rights_status: "approved",
     rights_reviewed_at: new Date().toISOString(),

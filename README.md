@@ -43,7 +43,13 @@ As prévias `/demo` e `/demo/publico` funcionam com ou sem Supabase configurado.
 
 Um administrador precisa receber `app_metadata.role = admin` no Supabase Auth e entrar novamente. O login abre `/admin`, que dá acesso à gestão de licenças e ao catálogo. A conta administrativa não precisa de licença anual de músico.
 
-O catálogo central ainda não recebe músicas iniciais. Não adicione letras, cifras ou arranjos sem registrar origem, autorização, território e revisão. Apenas músicas aprovadas e válidas no Brasil podem ser consultadas. A cifra completa só é concedida a usuários autenticados; o público recebe apenas título, artista e gênero. A migração `202610060001_catalog_genres.sql` adiciona o gênero principal; músicas anteriores ficam como “Não informado” até a equipe classificá-las em `/admin/catalogo`.
+O catálogo central ainda não recebe músicas iniciais. Não adicione letras, cifras ou arranjos sem registrar a referência e os termos da autorização e concluir a revisão. Apenas músicas aprovadas e com autorização vigente podem ser consultadas. A cifra completa só é concedida a usuários autenticados; o público recebe apenas título, artista e gênero. A migração `202610060001_catalog_genres.sql` adiciona o gênero principal; músicas anteriores ficam como “Não informado” até a equipe classificá-las em `/admin/catalogo`.
+
+### Importação do catálogo
+
+Em `/admin/catalogo/importar`, a equipe envia o [modelo CSV](./public/modelo-catalogo.csv) preenchido e até dez cifras `.txt` em UTF-8 por lote. O CSV usa ponto e vírgula. Compositores ficam vazios e a versão interna recebe “Original”. `arquivo_txt` deve corresponder exatamente ao nome de um TXT enviado. `referencia_autorizacao` identifica o documento/licença, e `autorizacao` resume os termos permitidos. A validade, quando informada, usa `AAAA-MM-DD`. A prévia aponta campos inválidos, TXT ausentes e possíveis duplicatas; se houver erro, o lote inteiro é bloqueado. A importação grava todas as músicas como `pending`, fora do catálogo público.
+
+Cada item pendente aparece no catálogo administrativo com o botão **Revisar música**. A equipe pode corrigir o registro, salvar o rascunho, rejeitar ou aprovar após confirmar a autorização. A migração `202610060002_catalog_song_audit.sql` bloqueia novas duplicatas por título, artista e versão e registra criação, edição e mudança de estado com o administrador responsável. A migração `202610060003_simplify_catalog_rights.sql` substitui o antigo campo de origem pela referência da autorização e remove a coluna de território e seus filtros. Como o campo anterior podia conter apenas uma origem sem licença, a migração coloca músicas já aprovadas em estado pendente para nova revisão. Aplique as migrations em ordem antes de usar a importação e a revisão.
 
 ## Limites desta etapa
 

@@ -37,8 +37,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
   let catalogCountQuery = supabase
     .from("catalog_songs")
     .select("id", { count: "exact", head: true })
-    .eq("rights_status", "approved")
-    .contains("rights_territories", ["BR"]);
+    .eq("rights_status", "approved");
   if (searchTerm) {
     catalogCountQuery = catalogCountQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
   }
@@ -57,8 +56,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
   let songsQuery = supabase
     .from("catalog_songs")
     .select("id, title, artist, composers, version_label, original_key")
-    .eq("rights_status", "approved")
-    .contains("rights_territories", ["BR"]);
+    .eq("rights_status", "approved");
   if (searchTerm) {
     songsQuery = songsQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
   }
@@ -114,7 +112,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
           <section className="panel catalog-empty-panel">
             <span className="empty-queue-art"><ShieldCheck size={25} /></span>
             <h2>O catálogo está sendo preparado</h2>
-            <p>As músicas aparecem aqui depois que a plataforma confirmar origem e autorização de uso. Cifras de sites externos não são importadas automaticamente.</p>
+            <p>As músicas aparecem aqui depois que a plataforma confirmar a autorização de uso. Cifras de sites externos não são importadas automaticamente.</p>
           </section>
         ) : (
           <div className="catalog-grid">

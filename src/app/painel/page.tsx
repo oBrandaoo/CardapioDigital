@@ -302,7 +302,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               {enabledSongs.length === 0 && (
                 <div className="catalog-admin-callout">
                   <ShieldCheck size={17} />
-                  <span>O catálogo central ainda não tem cifras liberadas. Só músicas com origem e autorização documentadas serão publicadas.</span>
+                  <span>O catálogo central ainda não tem cifras liberadas. Só músicas com autorização documentada serão publicadas.</span>
                 </div>
               )}
             </article>
