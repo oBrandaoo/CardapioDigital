@@ -55,7 +55,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
   const page = Math.min(requestedPage, pageCount);
   let songsQuery = supabase
     .from("catalog_songs")
-    .select("id, title, artist, composers, version_label, original_key")
+    .select("id, title, artist, composers, version_label")
     .eq("rights_status", "approved");
   if (searchTerm) {
     songsQuery = songsQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
@@ -123,7 +123,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
                   <div className="panel-heading catalog-song-heading">
                     <div>
                       <h2>{song.title}</h2>
-                      <p>{song.artist}{song.original_key ? ` · Tom ${song.original_key}` : ""}</p>
+                      <p>{song.artist}</p>
                     </div>
                     {repertoireItem ? (
                       <form action={removeSongFromRepertoireAction}>

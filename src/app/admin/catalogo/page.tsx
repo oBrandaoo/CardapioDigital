@@ -94,9 +94,6 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
             <label>Gênero principal
               <input name="genre" type="text" maxLength={80} defaultValue="Sertanejo" required />
             </label>
-            <label>Tom original
-              <input name="original_key" type="text" maxLength={8} placeholder="Opcional" />
-            </label>
             <label>Validade da autorização
               <input name="rights_valid_until" type="date" />
             </label>

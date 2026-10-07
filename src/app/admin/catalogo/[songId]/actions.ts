@@ -21,21 +21,20 @@ function readSong(formData: FormData) {
   const title = field(formData, "title");
   const artist = field(formData, "artist");
   const genre = field(formData, "genre");
-  const originalKey = field(formData, "original_key");
   const chordSheet = field(formData, "chord_sheet");
   const authorizationReference = field(formData, "authorization_reference");
   const rightsBasis = field(formData, "rights_basis");
   const validUntil = field(formData, "rights_valid_until");
   const valid = /^[0-9a-f-]{36}$/i.test(id) &&
     title.length >= 1 && title.length <= 160 && artist.length >= 1 && artist.length <= 160 &&
-    genre.length >= 1 && genre.length <= 80 && originalKey.length <= 8 &&
+    genre.length >= 1 && genre.length <= 80 &&
     chordSheet.length >= 1 && chordSheet.length <= 40_000 &&
     authorizationReference.length <= 1000 && rightsBasis.length <= 2000 && validDate(validUntil);
 
   return {
     id, valid, authorizationReference, rightsBasis, validUntil,
     values: {
-      title, artist, genre, original_key: originalKey || null,
+      title, artist, genre,
       chord_sheet: chordSheet, authorization_reference: authorizationReference || null,
       rights_basis: rightsBasis || null,
       rights_valid_until: validUntil || null,

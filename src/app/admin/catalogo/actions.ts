@@ -15,7 +15,6 @@ export async function addApprovedSongAction(formData: FormData) {
   const artist = value(formData, "artist");
   const genre = value(formData, "genre");
   const versionLabel = value(formData, "version_label") || "Original";
-  const originalKey = value(formData, "original_key");
   const chordSheet = value(formData, "chord_sheet");
   const authorizationReference = value(formData, "authorization_reference");
   const rightsBasis = value(formData, "rights_basis");
@@ -30,7 +29,7 @@ export async function addApprovedSongAction(formData: FormData) {
     title.length < 1 || title.length > 160 ||
     artist.length < 1 || artist.length > 160 ||
     genre.length < 1 || genre.length > 80 ||
-    versionLabel.length > 100 || originalKey.length > 8 ||
+    versionLabel.length > 100 ||
     composers.length > 30 || composers.some((composer) => composer.length > 160) ||
     chordSheet.length < 1 || chordSheet.length > 40000 ||
     authorizationReference.length < 5 || authorizationReference.length > 1000 ||
@@ -50,7 +49,6 @@ export async function addApprovedSongAction(formData: FormData) {
     genre,
     composers,
     version_label: versionLabel,
-    original_key: originalKey || null,
     chord_sheet: chordSheet,
     authorization_reference: authorizationReference,
     rights_basis: rightsBasis,

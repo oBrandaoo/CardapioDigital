@@ -76,7 +76,6 @@ export async function commitCatalogImportAction(formData: FormData): Promise<Imp
     genre: song.genre,
     composers: song.composers,
     version_label: song.version_label,
-    original_key: song.original_key,
     chord_sheet: song.chord_sheet,
     authorization_reference: song.authorization_reference,
     rights_basis: song.rights_basis,

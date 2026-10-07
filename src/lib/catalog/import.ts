@@ -2,7 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 
 const HEADERS = [
-  "titulo", "artista", "genero", "tom_original",
+  "titulo", "artista", "genero",
   "arquivo_txt", "referencia_autorizacao", "autorizacao", "validade",
 ] as const;
 
@@ -17,7 +17,6 @@ export type ImportSong = {
   genre: string;
   composers: string[];
   version_label: string;
-  original_key: string | null;
   filename: string;
   chord_sheet: string;
   authorization_reference: string;
@@ -156,7 +155,7 @@ export async function parseImportFiles(formData: FormData): Promise<ParsedImport
       issues.push(`Linha ${line}: esperado ${HEADERS.length} colunas; encontrado ${row.length}.`);
       continue;
     }
-    const [title, artist, genre, originalKey, filename,
+    const [title, artist, genre, filename,
       authorizationReference, rightsBasis, rawValidUntil] = row;
     const composers: string[] = [];
     const versionLabel = "Original";
@@ -166,7 +165,6 @@ export async function parseImportFiles(formData: FormData): Promise<ParsedImport
     if (title.length < 1 || title.length > 160) rowIssues.push("título inválido");
     if (artist.length < 1 || artist.length > 160) rowIssues.push("artista inválido");
     if (genre.length < 1 || genre.length > 80) rowIssues.push("gênero inválido");
-    if (originalKey.length > 8) rowIssues.push("tom muito longo");
     if (!filename.toLowerCase().endsWith(".txt") || !chordSheet.trim()) rowIssues.push("TXT ausente ou vazio");
     if (chordSheet.length > 40_000 || chordSheet.includes("\u0000")) rowIssues.push("TXT inválido ou longo demais");
     if (authorizationReference.length < 5 || authorizationReference.length > 1000) rowIssues.push("referência da autorização deve ter 5 a 1000 caracteres");
@@ -175,7 +173,7 @@ export async function parseImportFiles(formData: FormData): Promise<ParsedImport
 
     const song: ImportSong = {
       line, title, artist, genre, composers, version_label: versionLabel,
-      original_key: originalKey || null, filename, chord_sheet: chordSheet,
+      filename, chord_sheet: chordSheet,
       authorization_reference: authorizationReference, rights_basis: rightsBasis,
       rights_valid_until: rawValidUntil || null,
       issues: rowIssues,

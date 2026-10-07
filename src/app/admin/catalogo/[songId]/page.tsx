@@ -16,7 +16,7 @@ export default async function SongReviewPage({ params, searchParams }: SongRevie
   const { supabase } = await requireAdmin();
   if (!/^[0-9a-f-]{36}$/i.test(songId)) notFound();
   const { data: song } = await supabase.from("catalog_songs")
-    .select("id, title, artist, genre, original_key, chord_sheet, authorization_reference, rights_basis, rights_valid_until, rights_status, created_at")
+    .select("id, title, artist, genre, chord_sheet, authorization_reference, rights_basis, rights_valid_until, rights_status, created_at")
     .eq("id", songId)
     .maybeSingle();
   if (!song) notFound();
@@ -54,7 +54,6 @@ export default async function SongReviewPage({ params, searchParams }: SongRevie
             <label>Título<input name="title" defaultValue={song.title} maxLength={160} required disabled={!pending} /></label>
             <label>Artista<input name="artist" defaultValue={song.artist} maxLength={160} required disabled={!pending} /></label>
             <label>Gênero principal<input name="genre" defaultValue={song.genre} maxLength={80} required disabled={!pending} /></label>
-            <label>Tom original<input name="original_key" defaultValue={song.original_key ?? ""} maxLength={8} disabled={!pending} /></label>
             <label>Validade da autorização<input name="rights_valid_until" type="date" defaultValue={song.rights_valid_until ?? ""} disabled={!pending} /></label>
             <label className="catalog-sheet-field">Cifra TXT
               <textarea name="chord_sheet" rows={15} maxLength={40000} defaultValue={song.chord_sheet} required disabled={!pending} />

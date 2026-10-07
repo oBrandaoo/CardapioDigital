@@ -21,7 +21,7 @@ export default async function ChordSheetPage({ params, searchParams }: ChordShee
   const { supabase } = await requireActiveMusician();
   const { data: song, error } = await supabase
     .from("catalog_songs")
-    .select("id, title, artist, composers, version_label, original_key, chord_sheet")
+    .select("id, title, artist, composers, version_label, chord_sheet")
     .eq("id", songId)
     .eq("rights_status", "approved")
     .maybeSingle();
@@ -43,7 +43,7 @@ export default async function ChordSheetPage({ params, searchParams }: ChordShee
         <div className="dashboard-title-row chord-sheet-title-row">
           <div>
             <h1>{song.title}</h1>
-            <p>{song.artist}{song.original_key ? ` · Tom original ${song.original_key}` : ""}</p>
+            <p>{song.artist}</p>
           </div>
           <span className="status-live"><ShieldCheck size={13} /> Conteúdo revisado</span>
         </div>
