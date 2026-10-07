@@ -21,7 +21,7 @@ Aplicação web mobile-first para músicos organizarem apresentações e receber
 | Quem acessa | Páginas principais | O que faz |
 | --- | --- | --- |
 | Visitante | `/m/[slug]`, pelo QR code, e `/m/[slug]/musicas` | Pesquisa o catálogo aprovado por gênero e consulta o repertório do cantor. Só pode pedir músicas do repertório, sem login. |
-| Músico | `/painel` e `/painel/repertorio` | Com licença ativa, gerencia perfil, apresentação, repertório, QR code e pedidos. Abre cifras aprovadas em uma página individual. |
+| Músico | `/painel`, `/painel/repertorio` e `/painel/apresentacoes` | Com licença ativa, gerencia perfil, apresentação, repertório, QR code e pedidos. Consulta o histórico de apresentações e abre cifras aprovadas em uma página individual. |
 | Equipe administrativa | `/admin`, `/admin/licencas` e `/admin/catalogo` | Convida músicos, controla licenças anuais e mantém o catálogo central autorizado. O acesso vem do perfil `admin`, sem depender da licença de músico. |
 
 A página inicial (`/`) explica as três áreas. Músicos e administradores usam o mesmo login em `/entrar`; o sistema envia cada um à sua área. `/demo` mostra um painel de músico fictício e `/demo/publico` mostra a prévia da página aberta pelo QR code. As prévias não enviam pedidos nem recebem pagamentos.

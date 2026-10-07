@@ -1576,6 +1576,23 @@ h3,
   font-size: 12px;
 }
 
+.performance-request-meta {
+  margin: 12px 0;
+  color: #53635f;
+  font-size: 12px;
+}
+
+.performance-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+  color: #62716c;
+  font-size: 12px;
+}
+
 .license-admin-form {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import {
   ArrowUpRight,
+  BookOpen,
   CircleHelp,
   ClipboardList,
   ExternalLink,
@@ -125,7 +126,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const { data: requests } = performance
     ? await supabase
         .from("music_requests")
-        .select("id, requester_name, price_cents, payment_status, status, created_at, catalog_songs(title, artist)")
+        .select("id, song_id, requester_name, price_cents, payment_status, status, created_at, catalog_songs(title, artist)")
         .eq("performance_id", performance.id)
         .eq("status", "queued")
         .order("created_at", { ascending: true })
@@ -142,6 +143,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <header className="dashboard-topbar">
           <Link href="/" aria-label="Cardápio Musical, início"><Brand /></Link>
           <div className="dashboard-header-actions">
+            <Link className="button button-outline button-small" href="/painel/apresentacoes"><ClipboardList size={15} /> Histórico</Link>
             <Link className="button button-outline button-small" href="/painel/repertorio"><Music2 size={15} /> Repertório</Link>
             <Link className="button button-outline button-small" href="/demo">Ver prévia</Link>
             <form action={signOutAction}><button className="button button-outline button-small" type="submit">Sair</button></form>
@@ -272,6 +274,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                           <td>{request.requester_name || "Público"}</td>
                           <td>
                             <div className="request-row-actions">
+                              {song && <Link className="button button-outline button-small" href={`/painel/repertorio/${request.song_id}`} prefetch={false}><BookOpen size={14} /> Cifra</Link>}
                               <form action={updateRequestStatusAction}>
                                 <input type="hidden" name="request_id" value={request.id} />
                                 <input type="hidden" name="status" value="played" />
