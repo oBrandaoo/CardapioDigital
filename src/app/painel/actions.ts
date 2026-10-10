@@ -108,7 +108,8 @@ export async function updateRequestStatusAction(formData: FormData) {
     .from("music_requests")
     .update({ status })
     .eq("id", requestId)
-    .eq("musician_id", musicianId);
+    .eq("musician_id", musicianId)
+    .eq("status", "queued");
   const { data, error } = status === "cancelled"
     ? await update.eq("payment_status", "not_required").select("id").maybeSingle()
     : await update.in("payment_status", ["not_required", "mock_paid", "paid"]).select("id").maybeSingle();

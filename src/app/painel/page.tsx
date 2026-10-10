@@ -274,7 +274,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                           <td>{request.requester_name || "Público"}</td>
                           <td>
                             <div className="request-row-actions">
-                              {song && <Link className="button button-outline button-small" href={`/painel/repertorio/${request.song_id}`} prefetch={false}><BookOpen size={14} /> Cifra</Link>}
+                              {song && <Link className="button button-outline button-small" href={`/painel/repertorio/${request.song_id}`} prefetch={false}><BookOpen size={14} /> Ver música</Link>}
                               <form action={updateRequestStatusAction}>
                                 <input type="hidden" name="request_id" value={request.id} />
                                 <input type="hidden" name="status" value="played" />
@@ -305,7 +305,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               {enabledSongs.length === 0 && (
                 <div className="catalog-admin-callout">
                   <ShieldCheck size={17} />
-                  <span>O catálogo central ainda não tem cifras liberadas. Só músicas com autorização documentada serão publicadas.</span>
+                  <span>O catálogo central ainda não tem músicas liberadas. Só músicas com autorização documentada serão publicadas.</span>
                 </div>
               )}
             </article>
@@ -352,7 +352,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             <div className="catalog-note" style={{ marginTop: 0 }}>
               <ShieldCheck size={17} />
-              <span>O público vê título e artista. A cifra fica no acesso autenticado do músico.</span>
+              <span>O público vê título e artista. Quando existir, a cifra fica no acesso autenticado do músico.</span>
             </div>
           </aside>
         </div>

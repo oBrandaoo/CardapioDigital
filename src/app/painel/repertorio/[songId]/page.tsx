@@ -55,8 +55,12 @@ export default async function ChordSheetPage({ params, searchParams }: ChordShee
               {song.composers.length > 0 && <p>Composição: {song.composers.join(", ")}</p>}
             </div>
           </div>
-          <pre className="chord-sheet">{song.chord_sheet}</pre>
-          <p className="rights-footnote"><ShieldCheck size={13} /> Cifra disponível a músicos autenticados conforme a revisão de direitos registrada pela plataforma.</p>
+          {song.chord_sheet.trim() ? (
+            <>
+              <pre className="chord-sheet">{song.chord_sheet}</pre>
+              <p className="rights-footnote"><ShieldCheck size={13} /> Cifra disponível a músicos autenticados conforme a revisão de direitos registrada pela plataforma.</p>
+            </>
+          ) : <p>Esta música não tem cifra cadastrada. Você pode incluí-la no repertório e receber pedidos normalmente.</p>}
         </section>
       </div>
     </main>

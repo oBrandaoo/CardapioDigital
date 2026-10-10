@@ -165,10 +165,10 @@ export async function parseImportFiles(formData: FormData): Promise<ParsedImport
     if (title.length < 1 || title.length > 160) rowIssues.push("título inválido");
     if (artist.length < 1 || artist.length > 160) rowIssues.push("artista inválido");
     if (genre.length < 1 || genre.length > 80) rowIssues.push("gênero inválido");
-    if (!filename.toLowerCase().endsWith(".txt") || !chordSheet.trim()) rowIssues.push("TXT ausente ou vazio");
+    if (filename && (!filename.toLowerCase().endsWith(".txt") || !chordSheet.trim())) rowIssues.push("TXT ausente ou vazio");
     if (chordSheet.length > 40_000 || chordSheet.includes("\u0000")) rowIssues.push("TXT inválido ou longo demais");
-    if (authorizationReference.length < 5 || authorizationReference.length > 1000) rowIssues.push("referência da autorização deve ter 5 a 1000 caracteres");
-    if (rightsBasis.length < 5 || rightsBasis.length > 2000) rowIssues.push("autorização deve ter 5 a 2000 caracteres");
+    if (authorizationReference && (authorizationReference.length < 5 || authorizationReference.length > 1000)) rowIssues.push("referência da autorização deve ter 5 a 1000 caracteres");
+    if (rightsBasis && (rightsBasis.length < 5 || rightsBasis.length > 2000)) rowIssues.push("autorização deve ter 5 a 2000 caracteres");
     if (rawValidUntil && !validDate(rawValidUntil)) rowIssues.push("validade deve ser AAAA-MM-DD");
 
     const song: ImportSong = {
@@ -182,8 +182,10 @@ export async function parseImportFiles(formData: FormData): Promise<ParsedImport
     if (seenSongs.has(key)) song.issues.push("música duplicada neste CSV");
     seenSongs.add(key);
     const fileKey = filename.toLocaleLowerCase("pt-BR");
-    if (usedFiles.has(fileKey)) song.issues.push("TXT associado a mais de uma linha");
-    usedFiles.add(fileKey);
+    if (filename) {
+      if (usedFiles.has(fileKey)) song.issues.push("TXT associado a mais de uma linha");
+      usedFiles.add(fileKey);
+    }
     songs.push(song);
   }
   for (const filename of fileMap.keys()) {

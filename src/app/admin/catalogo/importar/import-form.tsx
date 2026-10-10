@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import {
   commitCatalogImportAction,
@@ -11,6 +12,7 @@ export function CatalogImportForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [message, setMessage] = useState("");
+  const [imported, setImported] = useState(false);
   const [pending, startTransition] = useTransition();
   const hasErrors = !preview || preview.issues.length > 0 || preview.rows.some((row) => row.issues.length > 0);
 
@@ -18,6 +20,7 @@ export function CatalogImportForm() {
     if (!formRef.current) return;
     const formData = new FormData(formRef.current);
     setMessage("");
+    setImported(false);
     startTransition(async () => {
       try {
         setPreview(await previewCatalogImportAction(formData));
@@ -36,6 +39,7 @@ export function CatalogImportForm() {
       try {
         const result = await commitCatalogImportAction(formData);
         setMessage(result.message);
+        setImported(result.ok);
         if (result.ok) {
           formRef.current?.reset();
           setPreview(null);
@@ -44,6 +48,7 @@ export function CatalogImportForm() {
         }
       } catch {
         setPreview(null);
+        setImported(false);
         setMessage("A importação falhou. Nenhuma música foi publicada.");
       }
     });
@@ -54,14 +59,14 @@ export function CatalogImportForm() {
       <form
         ref={formRef}
         className="catalog-import-form"
-        onChange={() => { setPreview(null); setMessage(""); }}
+        onChange={() => { setPreview(null); setMessage(""); setImported(false); }}
         onSubmit={(event) => event.preventDefault()}
       >
         <label>Planilha CSV (UTF-8, separada por ponto e vírgula)
           <input name="catalog_csv" type="file" accept=".csv,text/csv" required />
         </label>
-        <label>Cifras em TXT (até 10 arquivos)
-          <input name="sheets" type="file" accept=".txt,text/plain" multiple required />
+        <label>Cifras em TXT (opcionais, até 10 arquivos)
+          <input name="sheets" type="file" accept=".txt,text/plain" multiple />
         </label>
         <div className="catalog-import-actions">
           <button className="button button-outline" type="button" disabled={pending} onClick={previewFiles}>
@@ -73,7 +78,7 @@ export function CatalogImportForm() {
         </div>
       </form>
 
-      {message && <p className="dashboard-flash" role="status">{message}</p>}
+      {message && <p className="dashboard-flash" role="status">{message}{imported && <> <Link href="/admin/catalogo?situacao=metadata_pending">Abrir fila de revisão</Link></>}</p>}
 
       {preview && (
         <section className="catalog-import-preview" aria-label="Prévia do lote">
@@ -89,7 +94,7 @@ export function CatalogImportForm() {
                 <div className="catalog-import-row" key={row.line}>
                   <div>
                     <strong>Linha {row.line}: {row.title || "Sem título"}</strong>
-                    <span>{row.artist || "Sem artista"} · {row.genre || "Sem gênero"} · {row.filename || "Sem TXT"}</span>
+                    <span>{row.artist || "Sem artista"} · {row.genre || "Sem gênero"} · {row.filename || "Sem cifra"}</span>
                   </div>
                   {row.issues.length ? (
                     <ul className="catalog-import-errors">

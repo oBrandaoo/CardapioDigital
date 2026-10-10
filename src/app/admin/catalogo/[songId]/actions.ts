@@ -9,35 +9,22 @@ function field(formData: FormData, name: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function validDate(value: string) {
-  if (!value) return true;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T12:00:00Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
 function readSong(formData: FormData) {
   const id = field(formData, "song_id");
   const title = field(formData, "title");
   const artist = field(formData, "artist");
   const genre = field(formData, "genre");
   const chordSheet = field(formData, "chord_sheet");
-  const authorizationReference = field(formData, "authorization_reference");
-  const rightsBasis = field(formData, "rights_basis");
-  const validUntil = field(formData, "rights_valid_until");
   const valid = /^[0-9a-f-]{36}$/i.test(id) &&
     title.length >= 1 && title.length <= 160 && artist.length >= 1 && artist.length <= 160 &&
     genre.length >= 1 && genre.length <= 80 &&
-    chordSheet.length >= 1 && chordSheet.length <= 40_000 &&
-    authorizationReference.length <= 1000 && rightsBasis.length <= 2000 && validDate(validUntil);
+    chordSheet.length <= 40_000;
 
   return {
-    id, valid, authorizationReference, rightsBasis, validUntil,
+    id, valid,
     values: {
       title, artist, genre,
-      chord_sheet: chordSheet, authorization_reference: authorizationReference || null,
-      rights_basis: rightsBasis || null,
-      rights_valid_until: validUntil || null,
+      chord_sheet: chordSheet,
     },
   };
 }
@@ -45,7 +32,7 @@ function readSong(formData: FormData) {
 export async function savePendingSongAction(formData: FormData) {
   const { supabase } = await requireAdmin();
   const song = readSong(formData);
-  if (!song.valid) redirect("/admin/catalogo?estado=campos");
+  if (!song.valid) redirect(/^[0-9a-f-]{36}$/i.test(song.id) ? `/admin/catalogo/${song.id}?estado=campos` : "/admin/catalogo?estado=campos");
 
   const { data, error } = await supabase.from("catalog_songs")
     .update(song.values)
@@ -58,21 +45,18 @@ export async function savePendingSongAction(formData: FormData) {
   redirect(`/admin/catalogo/${song.id}?estado=salva`);
 }
 
-export async function approvePendingSongAction(formData: FormData) {
+export async function validateSongMetadataAction(formData: FormData) {
   const { supabase, adminId } = await requireAdmin();
   const song = readSong(formData);
-  const confirmed = formData.get("rights_confirmed") === "yes";
-  if (!song.valid || !confirmed || song.authorizationReference.length < 5 || song.rightsBasis.length < 5 ||
-      (song.validUntil && song.validUntil < new Date().toISOString().slice(0, 10))) {
-    redirect("/admin/catalogo?estado=campos");
+  if (!song.valid) {
+    redirect(/^[0-9a-f-]{36}$/i.test(song.id) ? `/admin/catalogo/${song.id}?estado=campos` : "/admin/catalogo?estado=campos");
   }
 
   const { data, error } = await supabase.from("catalog_songs")
     .update({
       ...song.values,
-      rights_status: "approved",
-      rights_reviewed_at: new Date().toISOString(),
-      rights_reviewed_by: adminId,
+      metadata_reviewed_at: new Date().toISOString(),
+      metadata_reviewed_by: adminId,
     })
     .eq("id", song.id)
     .eq("rights_status", "pending")
@@ -80,8 +64,7 @@ export async function approvePendingSongAction(formData: FormData) {
     .maybeSingle();
   if (error || !data) redirect("/admin/catalogo?estado=erro");
   revalidatePath("/admin/catalogo");
-  revalidatePath("/painel/repertorio");
-  redirect("/admin/catalogo?estado=aprovada");
+  redirect("/admin/catalogo?estado=dados_validados&situacao=metadata_pending&quantidade=1");
 }
 
 export async function rejectPendingSongAction(formData: FormData) {
@@ -96,5 +79,5 @@ export async function rejectPendingSongAction(formData: FormData) {
     .maybeSingle();
   if (error || !data) redirect("/admin/catalogo?estado=erro");
   revalidatePath("/admin/catalogo");
-  redirect("/admin/catalogo?estado=rejeitada");
+  redirect("/admin/catalogo?estado=rejeitada&situacao=pending");
 }

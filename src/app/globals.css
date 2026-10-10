@@ -1769,6 +1769,47 @@ h3,
 .catalog-import-entry p { margin: 3px 0 0; color: var(--ink-soft); font-size: 12px; }
 .catalog-review-link { margin-top: 14px; }
 
+.catalog-status-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.catalog-status-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  color: #53635f;
+  background: #fff;
+  border: 1px solid #d4e2da;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.catalog-status-filter:hover,
+.catalog-status-filter:focus-visible,
+.catalog-status-filter-active {
+  color: #fff;
+  background: var(--stage);
+  border-color: var(--stage);
+}
+
+.catalog-status-filter span {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  padding: 0 5px;
+  color: var(--deep);
+  background: #e6f1e8;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
 .catalog-import-panel ol {
   margin: 16px 0;
   padding-left: 21px;
@@ -1795,9 +1836,68 @@ h3,
 .catalog-import-row .catalog-import-ok { color: #28765c; font-weight: 700; }
 .catalog-review-form .catalog-review-actions { grid-column: 1 / -1; }
 .catalog-review-reject { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e7eeea; }
+.catalog-review-form { display: grid; gap: 24px; margin-top: 20px; }
+.catalog-review-checklist { padding: 16px 18px; border: 1px solid #d5e5da; border-radius: 12px; background: #f3f8f4; }
+.catalog-review-checklist strong { color: var(--deep); font-size: 15px; }
+.catalog-review-checklist p { margin: 4px 0 0; color: #53635f; font-size: 12px; }
+.catalog-review-checklist ul { display: grid; gap: 4px; margin: 12px 0 0; padding-left: 20px; color: #655c41; font-size: 12px; }
+.catalog-review-section { display: grid; gap: 13px; padding-top: 22px; border-top: 1px solid #e4ece7; }
+.catalog-review-section-heading h3 { margin: 0; color: var(--deep); font-size: 16px; }
+.catalog-review-section-heading p { margin: 4px 0 0; color: #62716c; font-size: 12px; }
+.catalog-review-section > label, .catalog-review-grid > label { display: grid; gap: 6px; color: #53635f; font-size: 12px; font-weight: 700; }
+.catalog-review-section input:not([type="checkbox"]), .catalog-review-section textarea { width: 100%; min-height: 42px; padding: 10px 12px; color: var(--ink); background: #fbfcfb; border: 1px solid #ccd9d4; border-radius: 10px; font: inherit; font-weight: 400; }
+.catalog-review-section textarea { line-height: 1.5; resize: vertical; }
+.catalog-review-section small { color: #788580; font-size: 11px; }
+.catalog-review-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.catalog-review-grid > label:last-child { grid-column: 1 / -1; }
+.catalog-review-section .catalog-review-file { max-width: 340px; }
+.catalog-review-section .catalog-review-file input { padding: 7px; }
+.catalog-review-section .rights-confirmation { display: flex; align-items: flex-start; gap: 10px; }
+.catalog-review-section .rights-confirmation input { width: 17px; height: 17px; min-height: 0; flex: 0 0 auto; margin: 1px 0 0; accent-color: var(--stage); }
+.catalog-review-readonly { display: grid; gap: 7px; margin-top: 18px; color: #53635f; font-size: 13px; }
+.catalog-review-readonly p { margin: 0; }
+@media (max-width: 680px) { .catalog-review-grid { grid-template-columns: 1fr; } .catalog-review-grid > label:last-child { grid-column: auto; } }
+.catalog-bulk-review { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin: 18px 0; padding: 15px 18px; border: 1px solid #cfe2d6; border-radius: 12px; background: #f3f8f4; }
+.catalog-bulk-review strong { color: var(--deep); font-size: 14px; }
+.catalog-bulk-review p { margin: 4px 0 0; color: #53635f; font-size: 12px; }
+.catalog-bulk-review-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.catalog-song-title { display: flex; align-items: flex-start; gap: 11px; }
+.catalog-song-title > input { width: 18px; height: 18px; flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--stage); }
+.catalog-song-review-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.catalog-metadata-reviewed, .catalog-metadata-pending { font-size: 12px; font-weight: 700; }
+.catalog-metadata-reviewed { color: #28765c; }
+.catalog-metadata-pending { color: #986a2c; }
 .catalog-audit-panel { margin-top: 16px; }
 .catalog-audit-panel h2 { margin: 0 0 10px; color: var(--deep); font-size: 15px; }
 .catalog-audit-panel ul { margin: 0; padding-left: 18px; color: #62716c; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+
+.musicbrainz-panel { margin-top: 18px; }
+.musicbrainz-notice { margin: 0 0 20px; color: #53635f; font-size: 13px; line-height: 1.55; }
+.musicbrainz-results { margin-top: 25px; }
+.musicbrainz-results h2 { margin: 0 0 12px; color: var(--deep); font-size: 18px; }
+.musicbrainz-results > p, .musicbrainz-results-heading p { color: #62716c; font-size: 12px; }
+.musicbrainz-results-heading { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.musicbrainz-results-heading p { margin: 0 0 16px; }
+.musicbrainz-result, .musicbrainz-recording { display: flex; align-items: center; gap: 12px; padding: 13px; border-bottom: 1px solid #e4ece7; }
+.musicbrainz-result { justify-content: space-between; color: var(--deep); }
+.musicbrainz-result:hover { background: #f1f7f3; }
+.musicbrainz-result > span:last-child { color: var(--stage); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.musicbrainz-result strong, .musicbrainz-recording strong { display: block; font-size: 13px; }
+.musicbrainz-result small, .musicbrainz-recording small { display: block; margin-top: 3px; color: #6c7d76; font-size: 11px; }
+.musicbrainz-list { border: 1px solid #e4ece7; border-radius: 12px; overflow: hidden; }
+.musicbrainz-recording:last-child { border-bottom: 0; }
+.musicbrainz-recording > label { display: flex; align-items: center; flex: 1; min-width: 0; gap: 12px; cursor: pointer; }
+.musicbrainz-recording > label > input { accent-color: var(--stage); }
+.musicbrainz-recording > label > span { flex: 1; min-width: 0; }
+.musicbrainz-recording > a { color: var(--stage); }
+.musicbrainz-import-actions { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.musicbrainz-import-actions label { display: grid; gap: 6px; color: #53635f; font-size: 12px; font-weight: 700; }
+.musicbrainz-import-actions input { min-height: 40px; padding: 0 10px; border: 1px solid #ccd9d4; border-radius: 10px; }
+.musicbrainz-bulk { margin: 4px 0 24px; padding: 18px; border: 1px solid #cfe2d6; border-radius: 12px; background: #f4faf6; }
+.musicbrainz-bulk h3 { margin: 0 0 6px; color: var(--deep); font-size: 15px; }
+.musicbrainz-bulk > p { margin: 0 0 12px; color: #53635f; font-size: 12px; line-height: 1.55; }
+.musicbrainz-bulk .musicbrainz-import-actions { margin: 0 0 12px; }
+.musicbrainz-bulk .dashboard-flash { margin: 12px 0 0; }
 
 .catalog-genre-form {
   display: flex;

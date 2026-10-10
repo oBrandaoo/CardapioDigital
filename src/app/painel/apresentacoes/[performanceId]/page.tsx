@@ -93,7 +93,7 @@ export default async function PerformanceRequestsPage({ params, searchParams }: 
                     {" · "}{paymentStatuses[request.payment_status] ?? request.payment_status}
                     {request.price_cents > 0 && ` · ${(request.price_cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`}
                   </p>
-                  {song && <Link className="button button-outline button-small" href={`/painel/repertorio/${request.song_id}`} prefetch={false}><BookOpen size={14} /> Abrir cifra</Link>}
+                  {song && <Link className="button button-outline button-small" href={`/painel/repertorio/${request.song_id}`} prefetch={false}><BookOpen size={14} /> Ver música</Link>}
                 </article>
               );
             })}

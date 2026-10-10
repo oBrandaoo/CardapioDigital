@@ -328,7 +328,7 @@ export default async function PublicSongSearchPage({ params, searchParams }: Pub
         </section>
 
         <p className="public-footer">
-          <ShieldCheck size={13} /> O público vê títulos. As cifras ficam no acesso autenticado do músico.
+          <ShieldCheck size={13} /> O público vê títulos. Quando houver cifra, ela fica no acesso autenticado do músico.
           <br />
           <span className="brand-lockup" aria-label="Feito com Cardápio Musical">
             <span className="brand-mark"><Music2 size={15} /></span>

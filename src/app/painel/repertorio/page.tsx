@@ -142,7 +142,7 @@ export default async function RepertoirePage({ searchParams }: RepertoirePagePro
                     className="button button-outline button-small catalog-open-sheet"
                     href={catalogPageHref(`/painel/repertorio/${song.id}`, searchTerm, page)}
                     prefetch={false}
-                  ><BookOpen size={14} /> Abrir cifra</Link>
+                  ><BookOpen size={14} /> Ver música</Link>
                   {repertoireItem && (
                     <form action={updateRepertoirePriceAction} className="repertoire-price-form">
                       <input type="hidden" name="item_id" value={repertoireItem.id} />

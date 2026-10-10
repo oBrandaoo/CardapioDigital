@@ -31,7 +31,7 @@ export async function addApprovedSongAction(formData: FormData) {
     genre.length < 1 || genre.length > 80 ||
     versionLabel.length > 100 ||
     composers.length > 30 || composers.some((composer) => composer.length > 160) ||
-    chordSheet.length < 1 || chordSheet.length > 40000 ||
+    chordSheet.length > 40000 ||
     authorizationReference.length < 5 || authorizationReference.length > 1000 ||
     rightsBasis.length < 5 || rightsBasis.length > 2000 || !rightsConfirmed
   ) {
@@ -94,4 +94,24 @@ export async function updateSongGenreAction(formData: FormData) {
   revalidatePath("/admin/catalogo");
   revalidatePath("/painel/repertorio");
   redirect("/admin/catalogo?estado=genero");
+}
+
+export async function validateCatalogMetadataBatchAction(formData: FormData) {
+  const { supabase, adminId } = await requireAdmin();
+  const rawIds = formData.getAll("song_id");
+  const ids = [...new Set(rawIds.filter((id): id is string => typeof id === "string"))];
+  if (
+    ids.length < 1 || ids.length > 30 || ids.length !== rawIds.length ||
+    ids.some((id) => !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id))
+  ) redirect("/admin/catalogo?estado=selecao&situacao=metadata_pending");
+
+  const { data, error } = await supabase.from("catalog_songs")
+    .update({ metadata_reviewed_at: new Date().toISOString(), metadata_reviewed_by: adminId })
+    .in("id", ids)
+    .eq("rights_status", "pending")
+    .is("metadata_reviewed_at", null)
+    .select("id");
+  if (error) redirect("/admin/catalogo?estado=erro&situacao=metadata_pending");
+  revalidatePath("/admin/catalogo");
+  redirect(`/admin/catalogo?estado=dados_validados&situacao=metadata_pending&quantidade=${data?.length ?? 0}`);
 }

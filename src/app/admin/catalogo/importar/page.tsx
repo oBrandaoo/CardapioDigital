@@ -16,8 +16,13 @@ export default async function CatalogImportPage() {
         </header>
 
         <div className="dashboard-title-row">
-          <div><h1>Importar músicas</h1><p>Carregue metadados e cifras em pequenos lotes para revisão.</p></div>
+          <div><h1>Importar músicas</h1><p>Carregue metadados e cifras opcionais em pequenos lotes para revisão.</p></div>
           <span className="status-live"><ShieldCheck size={13} /> Administração</span>
+        </div>
+
+        <div className="catalog-import-entry">
+          <div><strong>Buscar metadados no MusicBrainz</strong><p>Selecione gravações por artista. Elas entram como rascunhos privados, sem cifra nem autorização.</p></div>
+          <Link className="button button-outline button-small" href="/admin/catalogo/musicbrainz">Abrir busca</Link>
         </div>
 
         <section className="panel catalog-import-panel">
@@ -29,9 +34,9 @@ export default async function CatalogImportPage() {
           </div>
           <ol>
             <li><a href="/modelo-catalogo.csv" download>Baixe o modelo CSV</a> e preencha uma linha por música e versão.</li>
-            <li>Salve cada cifra em um arquivo TXT UTF-8. O nome deve ser igual ao campo <code>arquivo_txt</code> da planilha.</li>
-            <li>Informe a referência verificável da autorização e seus termos de uso. Use validade no formato <code>AAAA-MM-DD</code>, ou deixe em branco se não houver vencimento documentado. A versão interna será “Original”.</li>
-            <li>Guarde o documento da autorização. A importação registra a referência e os termos informados, mas não aprova a publicação.</li>
+            <li>Se houver cifra, salve-a em TXT UTF-8 e informe o nome em <code>arquivo_txt</code>. Caso contrário, deixe o campo vazio.</li>
+            <li>Os campos de autorização podem ficar vazios nesta etapa. Se já tiver documentação, informe a referência, os termos e a validade em <code>AAAA-MM-DD</code>.</li>
+            <li>A importação não aprova a publicação. Depois de validar os dados, registre a autorização na etapa separada de publicação.</li>
           </ol>
           <p className="catalog-import-note"><FileText size={16} /> Use ponto e vírgula como separador. Coloque valores com ponto e vírgula entre aspas duplas.</p>
           <CatalogImportForm />
