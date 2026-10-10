@@ -175,4 +175,4 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 - [ ] Felipe Araújo
 - [ ] Murilo Huff
 - [ ] Zé Felipe
-- [ ] Luan Pereira
+- [X] Luan Pereira

@@ -47,6 +47,7 @@ Estas regras registram decisões de produto do Cardápio Musical. Trate a seçã
 - Contas de músicos são criadas pela equipe após validação interna. Manter o cadastro aberto desativado no provedor de autenticação e não reintroduzir auto cadastro público sem pedido explícito do usuário.
 - A autorização/licença e o volume do catálogo inicial continuam pendentes. Estimativas de software não incluem obtenção de direitos, pagamentos de royalties, transcrição, revisão editorial nem carga em massa do acervo.
 - O tratamento de reembolso/cancelamento de pedido e a política de pedidos pagos que o músico não consegue tocar ainda precisam ser definidos antes do fluxo de produção.
+- InfinitePay é o provedor preferido pelo usuário para a próxima integração, sujeito à confirmação de split automático entre plataforma e músico, segurança da confirmação, elegibilidade e tarifas. A documentação pública de Checkout Integrado consultada em 2026-10-10 descreve checkout e webhook, mas não documenta o split; não ativar cobrança real ou trocar a divisão por repasse posterior sem decisão explícita.
 
 ## Instruções de trabalho no terminal
 
