@@ -1,6 +1,26 @@
-# Integração de pagamentos — avaliação da InfinitePay
+# Integração de pagamentos — avaliação dos provedores
 
 O fluxo atual cria um pedido por música e usa confirmação simulada apenas em desenvolvimento. Pedidos gratuitos entram diretamente na fila. Em produção, pedidos pagos ainda não têm checkout e não podem entrar na fila sem confirmação confiável do provedor.
+
+## Pagar.me: split e custo dos pedidos pequenos
+
+A [documentação do split v5](https://docs.pagar.me/docs/pedidos-com-split) confirma pedidos com mais de um recebedor, divisão por valor ou percentual e cadastro prévio dos recebedores e suas contas bancárias. Ela informa que o recurso está disponível apenas para clientes PSP. A [referência de Pix v5](https://docs.pagar.me/reference/pix-2) apresenta um pedido Pix com split, sujeito à habilitação da conta. A [documentação de recebedores](https://docs.pagar.me/reference/recebedores-1) exige dados cadastrais e descreve os estados de credenciamento dos músicos.
+
+O **1% mostrado no exemplo** da documentação de split é a comissão fictícia do marketplace naquela venda, não uma tarifa anunciada pela Pagar.me. A [oferta pública](https://website.pagar.me/ofertas) informa, para o plano Essencial: Pix 0,99%, crédito à vista 4,19%, cartão em 6 vezes 13,63%, cartão em 12 vezes 20,95% e mensalidade gratuita. O recebimento anunciado é em um dia, com possível retenção de até 30 dias para novos vendedores durante análise. A mesma página lista o split no plano Flex, cujas taxas são **customizadas**; portanto, não usar as taxas Essencial como preço contratado de uma integração com split.
+
+Em um pedido de R$ 5, as taxas percentuais Essencial corresponderiam aproximadamente a R$ 0,05 no Pix e R$ 0,21 no crédito à vista, antes de impostos e de eventuais condições adicionais. Parcelamento não faz sentido no pedido avulso de até R$ 5 e fica fora do caminho inicial. Solicitar proposta escrita para Pix com split: percentual e eventual valor fixo por transação, tarifa de recebedor/saque, antecipação, chargeback, estorno, prazo de liquidação e valor mínimo.
+
+A [referência do split v5](https://docs.pagar.me/reference/split-1) permite definir qual recebedor suporta a tarifa de processamento, eventual centavo residual e responsabilidade por chargeback. Esses parâmetros precisam seguir uma decisão explícita da operação. A regra do produto continua sendo 50/50 **após os impostos aplicáveis**; tarifa do provedor deve ser registrada separadamente e não pode ser tratada como imposto. A contabilidade precisa definir a base tributária e como aplicar essa regra em centavos antes de fixar valores no pedido real.
+
+**Caminho técnico candidato:** habilitar a conta PSP/Flex e recebedores, cobrar cada pedido por Pix com split, confirmar o pagamento por evento e consulta autenticada, e só então liberar o pedido ao músico. A elegibilidade, o contrato de tarifas e a política de estorno precisam estar fechados antes de ativar cobranças.
+
+### Preparação implementada sem CNPJ ativo
+
+A migration `202610100003_payment_provider_foundation.sql` reserva tabelas privadas para identificação dos recebedores, uma tentativa de pagamento por pedido e eventos do provedor. O registro de licença anual continua separado. Impostos, parcelas 50/50 e tarifa têm campos distintos; nenhuma parcela fiscal é preenchida automaticamente.
+
+O módulo `src/lib/payments/pagarme.ts` contém chamadas servidor a servidor para criar um pedido Pix com dois recebedores e consultar um pedido pela API v5. Ele exige que o código chamador forneça valores de split explícitos e quem suporta tarifa e chargeback. O módulo aceita **somente chave de teste** (`sk_test_`) e ainda não é chamado pelo fluxo público. Não há cobrança, webhook ativo, coleta de dados pessoais ou alteração do estado `paid` nesta etapa.
+
+Ao obter a conta, confirmar a modalidade PSP com Pix e split, cadastrar o recebedor da plataforma e cada músico, e obter a proposta Flex. A [API de pedidos v5](https://docs.pagar.me/reference/criar-pedido-2) exige os dados do comprador para PSP, inclusive endereço e telefone; a [referência de Pix](https://docs.pagar.me/reference/pix-2) também exige nome, e-mail, documento e telefone. Isso requer uma etapa de checkout e revisão da política de privacidade. Após fixar o cálculo fiscal em centavos, responsabilidade por tarifa/chargeback e política de pedidos não tocados, conectar o módulo ao fluxo, persistir o pedido externo e só confirmar o pagamento após consulta autenticada ao [pedido na Pagar.me](https://docs.pagar.me/reference/obter-pedido), processando eventos repetidos de forma idempotente. As [chaves de teste e produção](https://docs.pagar.me/reference/autentica%C3%A7%C3%A3o-2) usam o mesmo endpoint; a liberação de chave real exige uma alteração explícita no adaptador.
 
 ## InfinitePay: o que a documentação pública confirma
 
