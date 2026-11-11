@@ -10,7 +10,7 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 - [ ] Mariano & Caçula
 - [ ] Zico Dias & Ferrinho
 - [ ] Laureano & Soares
-- [ ] Raul Torres & Florêncio
+- [X] Raul Torres & Florêncio
 - [ ] Alvarenga & Ranchinho
 - [ ] Tonico & Tinoco
 - [ ] Vieira & Vieirinha
@@ -172,7 +172,7 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 
 ### Outros cantores solo de destaque
 
-- [ ] Felipe Araújo
-- [ ] Murilo Huff
-- [ ] Zé Felipe
+- [X] Felipe Araújo
+- [X] Murilo Huff
+- [X] Zé Felipe
 - [X] Luan Pereira

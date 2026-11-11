@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "importar:artistas": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --disable-warning=ExperimentalWarning scripts/importar-artistas.mts",
+    "importar:sertanejo": "npm run importar:artistas -- lista-artistas-sertanejo.md --genero Sertanejo",
+    "importar:mpb": "npm run importar:artistas -- lista-artistas-mpb.md --genero MPB"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

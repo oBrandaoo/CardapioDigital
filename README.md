@@ -51,6 +51,17 @@ Em `/admin/catalogo/importar`, a equipe envia o [modelo CSV](./public/modelo-cat
 
 Em `/admin/catalogo/musicbrainz`, a equipe pode buscar um artista no MusicBrainz, selecionar gravações ou importar todas as páginas do artista como rascunhos privados. A importação completa processa 25 gravações por vez, mostra o progresso e pode ser pausada ou retomada no mesmo navegador após uma falha. A busca usa a API pública no servidor, sem OAuth ou chave de API, e reserva intervalos de pelo menos 1,1 segundo entre chamadas para respeitar o limite do serviço. Registros repetidos são ignorados. A migração `202610100001_musicbrainz_metadata_drafts.sql` permite que rascunhos permaneçam sem cifra, mas exige cifra antes da aprovação. Complete o TXT e a autorização documentada na fila de revisão; metadados do MusicBrainz não autorizam a publicação de uma cifra.
 
+Para importar listas inteiras sem abrir o navegador, use o script `scripts/importar-artistas.mts`, que aplica as mesmas regras da tela acima. Ele lê uma lista Markdown (`lista-artistas-sertanejo.md`, `lista-artistas-mpb.md`), identifica cada artista desmarcado (`- [ ]`) no MusicBrainz, importa todas as gravações como rascunhos `pending` e marca `[X]` ao concluir cada artista. O script usa `NEXT_PUBLIC_SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` do `.env`/`.env.local` e registra como responsável (`created_by`) o único usuário com `app_metadata.role = 'admin'` ou o definido em `IMPORT_ADMIN_EMAIL`. O intervalo entre chamadas é reservado pela mesma função do banco usada pela tela, então as duas podem rodar ao mesmo tempo.
+
+```bash
+npm run importar:mpb                      # ou importar:sertanejo
+npm run importar:artistas -- lista.md --genero "Samba"
+npm run importar:artistas -- lista-artistas-mpb.md --simular   # só identifica os artistas, sem gravar
+npm run importar:artistas -- lista-artistas-mpb.md --genero MPB --artista "Djavan"
+```
+
+Interromper e rodar de novo é seguro: duplicatas são ignoradas pelo banco e o artista só é marcado depois de concluído. Quando o nome não for encontrado ou houver homônimos, o script lista os candidatos e pula o artista; anote o identificador correto na linha (`- [ ] Simone <!-- mbid: ... -->`) e rode de novo.
+
 Cada item pendente aparece no catálogo administrativo. A equipe pode validar os dados de até 30 músicas por página de uma vez, sem cifra ou documentação de direitos, usando o filtro **Dados a revisar**. A revisão individual permite corrigir título, artista e gênero, além de adicionar uma cifra TXT opcional. A validação dos dados mantém o registro privado. A migração `202610100002_catalog_metadata_review.sql` adiciona esse controle independente da publicação e permite publicar músicas sem cifra. Para publicar, use a tela separada **Publicação** e registre a autorização documentada para os dados da música e, quando houver, para a cifra. A migração `202610060002_catalog_song_audit.sql` bloqueia novas duplicatas por título, artista e versão e registra criação, edição e mudança de estado com o administrador responsável. A migração `202610060003_simplify_catalog_rights.sql` substitui o antigo campo de origem pela referência da autorização e remove a coluna de território e seus filtros. Como o campo anterior podia conter apenas uma origem sem licença, a migração coloca músicas já aprovadas em estado pendente para nova revisão. Aplique as migrations em ordem antes de usar a importação e a revisão.
 
 ## Limites desta etapa
