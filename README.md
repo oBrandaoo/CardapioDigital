@@ -64,6 +64,18 @@ Interromper e rodar de novo é seguro: duplicatas são ignoradas pelo banco e o 
 
 Cada item pendente aparece no catálogo administrativo. A equipe pode validar os dados de até 30 músicas por página de uma vez, sem cifra ou documentação de direitos, usando o filtro **Dados a revisar**. A revisão individual permite corrigir título, artista e gênero, além de adicionar uma cifra TXT opcional. A validação dos dados mantém o registro privado. A migração `202610100002_catalog_metadata_review.sql` adiciona esse controle independente da publicação e permite publicar músicas sem cifra. Para publicar, use a tela separada **Publicação** e registre a autorização documentada para os dados da música e, quando houver, para a cifra. A migração `202610060002_catalog_song_audit.sql` bloqueia novas duplicatas por título, artista e versão e registra criação, edição e mudança de estado com o administrador responsável. A migração `202610060003_simplify_catalog_rights.sql` substitui o antigo campo de origem pela referência da autorização e remove a coluna de território e seus filtros. Como o campo anterior podia conter apenas uma origem sem licença, a migração coloca músicas já aprovadas em estado pendente para nova revisão. Aplique as migrations em ordem antes de usar a importação e a revisão.
 
+A migração `202611100001_catalog_duplicate_index.sql` troca a verificação de duplicatas exatas por um índice único (antes, cada inserção percorria o catálogo inteiro). A migração `202611100002_catalog_duplicate_cleanup.sql` adiciona ferramentas para remover duplicatas aproximadas depois de uma importação em massa. Essas duplicatas ignoram acentos, maiúsculas e pontuação, sufixos de versão no título ("(Ao Vivo)", "- Remastered 2011", "(feat. X)") e participações no artista ("feat.", "part."). Créditos conjuntos como "A & B" continuam distintos. No SQL Editor do Supabase:
+
+```sql
+select * from private.remove_catalog_duplicates();               -- só contagem, não apaga
+select * from private.catalog_song_duplicates
+  order by dedupe_key, group_rank limit 200;                      -- grupos: keep / remove / review
+select * from private.remove_catalog_duplicates(true);           -- apaga um lote de até 5.000; repita até removed = 0
+vacuum analyze public.catalog_songs;
+```
+
+Em cada grupo, fica o registro mais completo: aprovado, com cifra, com autorização, em uso, revisado e com o título mais curto. Só são apagados rascunhos pendentes sem cifra, sem autorização e fora de repertórios e pedidos. Os demais aparecem como `review` para decisão manual. Cada remoção fica no histórico da música mantida como "Duplicata mesclada".
+
 ## Limites desta etapa
 
 As decisões e a sequência para a integração real estão em [PAGAMENTOS.md](./PAGAMENTOS.md).
