@@ -12,8 +12,9 @@ export async function submitSongRequestAction(formData: FormData) {
   const slug = String(formData.get("slug") ?? "");
   const requesterName = String(formData.get("requester_name") ?? "").trim().slice(0, 60);
 
-  if (!/^[0-9a-f-]{36}$/i.test(performanceId) || !/^[0-9a-f-]{36}$/i.test(songId) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    redirect("/m/banda-mare?pedido=indisponivel");
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) redirect("/");
+  if (!/^[0-9a-f-]{36}$/i.test(performanceId) || !/^[0-9a-f-]{36}$/i.test(songId)) {
+    redirect(`/m/${slug}/musicas?pedido=indisponivel`);
   }
   const searchTerm = normalizeCatalogSearch(String(formData.get("search_query") ?? ""))
     .replace(/[^\p{L}\p{N}\s-]/gu, " ")
@@ -21,8 +22,10 @@ export async function submitSongRequestAction(formData: FormData) {
     .trim();
   const genre = String(formData.get("search_genre") ?? "").trim().slice(0, 80);
   const page = parseCatalogPage(String(formData.get("search_page") ?? ""));
+  const fromCatalog = formData.get("search_tab") === "catalogo";
   const resultHref = (state: string) => {
     const params = new URLSearchParams({ pedido: state });
+    if (fromCatalog) params.set("aba", "catalogo");
     if (searchTerm) params.set("q", searchTerm);
     if (genre) params.set("genero", genre);
     if (page > 1) params.set("pagina", String(page));

@@ -5,13 +5,14 @@ import { Brand } from "@/components/brand";
 import { requireActiveMusician } from "@/lib/auth/require-active-musician";
 import {
   catalogPageHref,
+  firstSearchParam,
   normalizeCatalogSearch,
   parseCatalogPage,
 } from "@/lib/catalog/pagination";
 
 type ChordSheetPageProps = {
   params: Promise<{ songId: string }>;
-  searchParams: Promise<{ q?: string | string[]; pagina?: string | string[] }>;
+  searchParams: Promise<{ q?: string | string[]; pagina?: string | string[]; aba?: string | string[] }>;
 };
 
 export default async function ChordSheetPage({ params, searchParams }: ChordSheetPageProps) {
@@ -30,7 +31,8 @@ export default async function ChordSheetPage({ params, searchParams }: ChordShee
 
   const searchTerm = normalizeCatalogSearch(query.q);
   const page = parseCatalogPage(query.pagina);
-  const returnHref = catalogPageHref("/painel/repertorio", searchTerm, page);
+  const tab = firstSearchParam(query.aba) === "meu" ? "meu" : "";
+  const returnHref = catalogPageHref("/painel/repertorio", searchTerm, page, { aba: tab });
 
   return (
     <main className="dashboard-page">

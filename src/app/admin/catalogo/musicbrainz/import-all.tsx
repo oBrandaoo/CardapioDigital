@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { importAllMusicBrainzPageAction } from "./actions";
 
 type Progress = {
@@ -19,29 +19,42 @@ function storageKey(artistId: string) {
   return `cardapio:musicbrainz:import:${artistId}`;
 }
 
+function readSaved(artistId: string): string | null {
+  try {
+    return localStorage.getItem(storageKey(artistId));
+  } catch {
+    return null; // O armazenamento local é opcional; a importação também funciona sem ele.
+  }
+}
+
+function subscribeToStorage(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
+}
+
+function parseSaved(saved: string | null, artistId: string): Progress | null {
+  if (!saved) return null;
+  try {
+    const value = JSON.parse(saved) as Progress;
+    return value.artistId === artistId && Number.isSafeInteger(value.nextPage) && value.nextPage >= 1 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+// The parent renders this with key={artistId}, so state starts fresh for each artist.
 export function ImportAllMusicBrainz({ artistId, recordingCount }: { artistId: string; recordingCount: number }) {
-  const [genre, setGenre] = useState("Sertanejo");
-  const [progress, setProgress] = useState<Progress | null>(null);
-  const [message, setMessage] = useState("");
+  const saved = useSyncExternalStore(subscribeToStorage, () => readSaved(artistId), () => null);
+  const savedProgress = useMemo(() => parseSaved(saved, artistId), [saved, artistId]);
+  const [localProgress, setProgress] = useState<Progress | null>(null);
+  const [genreInput, setGenre] = useState<string | null>(null);
+  const [localMessage, setMessage] = useState<string | null>(null);
   const [running, startTransition] = useTransition();
   const stopRequested = useRef(false);
 
-  useEffect(() => {
-    setProgress(null);
-    setGenre("Sertanejo");
-    setMessage("");
-    try {
-      const saved = localStorage.getItem(storageKey(artistId));
-      if (!saved) return;
-      const value = JSON.parse(saved) as Progress;
-      if (value.artistId !== artistId || !Number.isSafeInteger(value.nextPage) || value.nextPage < 1) return;
-      setProgress(value);
-      setGenre(value.genre);
-      setMessage("Importação anterior encontrada. Clique em Continuar para retomar.");
-    } catch {
-      // O armazenamento local é opcional; a importação também funciona sem ele.
-    }
-  }, [artistId]);
+  const progress = localProgress ?? savedProgress;
+  const genre = genreInput ?? savedProgress?.genre ?? "Sertanejo";
+  const message = localMessage ?? (savedProgress ? "Importação anterior encontrada. Clique em Continuar para retomar." : "");
 
   function save(next: Progress) {
     setProgress(next);

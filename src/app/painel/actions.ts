@@ -63,10 +63,10 @@ export async function updateMusicianProfileAction(formData: FormData) {
   const bio = readField("bio");
 
   if (stageName.length < 2 || stageName.length > 80 || city.length > 100 || bio.length > 500) {
-    redirect("/painel?estado=perfil_campos");
+    redirect("/painel/perfil?estado=perfil_campos");
   }
   if (slug.length < 3 || slug.length > 60 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    redirect("/painel?estado=endereco_invalido");
+    redirect("/painel/perfil?estado=endereco_invalido");
   }
 
   const { data: currentProfile, error: readError } = await supabase
@@ -75,7 +75,7 @@ export async function updateMusicianProfileAction(formData: FormData) {
     .eq("id", musicianId)
     .maybeSingle();
 
-  if (readError || !currentProfile) redirect("/painel?estado=perfil");
+  if (readError || !currentProfile) redirect("/painel/perfil?estado=perfil");
 
   const { error } = await supabase
     .from("musicians")
@@ -87,13 +87,14 @@ export async function updateMusicianProfileAction(formData: FormData) {
     })
     .eq("id", musicianId);
 
-  if (error?.code === "23505") redirect("/painel?estado=endereco_em_uso");
-  if (error) redirect("/painel?estado=perfil");
+  if (error?.code === "23505") redirect("/painel/perfil?estado=endereco_em_uso");
+  if (error) redirect("/painel/perfil?estado=perfil");
 
   revalidatePath("/painel");
+  revalidatePath("/painel/perfil");
   revalidatePath(`/m/${currentProfile.slug}`);
   revalidatePath(`/m/${slug}`);
-  redirect("/painel?estado=perfil_salvo");
+  redirect("/painel/perfil?estado=perfil_salvo");
 }
 
 export async function updateRequestStatusAction(formData: FormData) {

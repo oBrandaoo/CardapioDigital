@@ -110,7 +110,7 @@ export default async function MusicBrainzImportPage({ searchParams }: MusicBrain
                 <div><h2>Gravações encontradas</h2><p>{recordingCount.toLocaleString("pt-BR")} registros no MusicBrainz. Escolha somente músicas relevantes para o catálogo.</p></div>
                 <Link className="button button-outline button-small" href={href(query, "")} prefetch={false}><ArrowLeft size={14} /> Trocar artista</Link>
               </div>
-              {recordingCount > 0 && <ImportAllMusicBrainz artistId={artistId} recordingCount={recordingCount} />}
+              {recordingCount > 0 && <ImportAllMusicBrainz key={artistId} artistId={artistId} recordingCount={recordingCount} />}
               {recordings.length ? (
                 <form action={importMusicBrainzRecordingsAction}>
                   <input type="hidden" name="artist_id" value={artistId} />

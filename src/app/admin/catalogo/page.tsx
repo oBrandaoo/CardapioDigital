@@ -3,10 +3,11 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { CatalogListControls } from "@/components/catalog-list-controls";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { catalogSearchPatterns } from "@/lib/catalog/search";
 import { addApprovedSongAction } from "@/app/admin/catalogo/actions";
 import { CatalogSongList } from "./catalog-song-list";
+import { FACTUAL_METADATA_AUTHORIZATION, factualMetadataAuthorizationExpired, MAX_BULK_CATALOG_SELECTION } from "@/lib/catalog/metadata-authorization";
 import {
-  CATALOG_PAGE_SIZE,
   catalogPageHref,
   firstSearchParam,
   normalizeCatalogSearch,
@@ -19,13 +20,19 @@ type CatalogAdminPageProps = {
     q?: string | string[];
     pagina?: string | string[];
     situacao?: string | string[];
+    quantidade?: string | string[];
+    ignoradas?: string | string[];
   }>;
 };
+
+// Admin pages hold a whole bulk selection (validation or publication) at once.
+const ADMIN_CATALOG_PAGE_SIZE = MAX_BULK_CATALOG_SELECTION;
 
 const statusOptions = [
   { value: "", label: "Todas" },
   { value: "metadata_pending", label: "Dados a revisar" },
   { value: "metadata_reviewed", label: "Dados validados" },
+  { value: "popular", label: "Mais conhecidas" },
   { value: "pending", label: "Pendentes" },
   { value: "approved", label: "Aprovadas" },
   { value: "rejected", label: "Rejeitadas" },
@@ -42,8 +49,21 @@ const notices: Record<string, string> = {
   campos: "Preencha título, artista e a referência da autorização; confirme a revisão. A cifra é opcional.",
   erro: "Não foi possível atualizar o catálogo. Confira os dados e tente novamente.",
   dados_validados: "Dados das músicas validados. Elas continuam privadas até a aprovação para publicação.",
-  selecao: "Selecione de 1 a 30 músicas desta página para validar os dados.",
+  selecao: `Selecione de 1 a ${MAX_BULK_CATALOG_SELECTION} músicas desta página para validar os dados.`,
+  selecao_publicar: `Selecione de 1 a ${MAX_BULK_CATALOG_SELECTION} músicas com dados validados e confirme a autorização para publicar.`,
+  autorizacao_vencida: "A autorização de metadados factuais venceu. Registre uma nova decisão antes de publicar em lote.",
 };
+
+function countNotice(estado: string, quantidade: number, ignoradas: number) {
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  if (estado === "dados_validados") return `${plural(quantidade, "música validada", "músicas validadas")}. Elas continuam privadas até a aprovação para publicação.`;
+  if (estado === "publicadas") {
+    const skipped = ignoradas > 0 ? ` ${plural(ignoradas, "selecionada foi ignorada", "selecionadas foram ignoradas")} (já publicada, com cifra, sem dados validados ou fora do recorte).` : "";
+    return `${plural(quantidade, "música publicada", "músicas publicadas")} com a autorização de metadados factuais.${skipped}`;
+  }
+  if (estado === "retiradas") return `${plural(quantidade, "música retirada", "músicas retiradas")} do catálogo público. Elas ficaram como contestadas.`;
+  return null;
+}
 
 export default async function AdminCatalogPage({ searchParams }: CatalogAdminPageProps) {
   const params = await searchParams;
@@ -52,16 +72,18 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
   const requestedStatus = firstSearchParam(params.situacao) ?? "";
   const status = statusOptions.some((option) => option.value === requestedStatus) ? requestedStatus : "";
   const requestedPage = parseCatalogPage(params.pagina);
+  const quantidade = Number(firstSearchParam(params.quantidade) ?? "0") || 0;
+  const ignoradas = Number(firstSearchParam(params.ignoradas) ?? "0") || 0;
+  const notice = countNotice(estado, quantidade, ignoradas) ?? notices[estado];
   const { supabase } = await requireAdmin();
 
   let countQuery = supabase
     .from("catalog_songs")
     .select("id", { count: "exact", head: true });
-  if (searchTerm) {
-    countQuery = countQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
-  }
+  for (const pattern of catalogSearchPatterns(searchTerm)) countQuery = countQuery.ilike("search_text", pattern);
   if (status === "metadata_pending") countQuery = countQuery.eq("rights_status", "pending").is("metadata_reviewed_at", null);
   else if (status === "metadata_reviewed") countQuery = countQuery.eq("rights_status", "pending").not("metadata_reviewed_at", "is", null);
+  else if (status === "popular") countQuery = countQuery.not("popularity_rank", "is", null);
   else if (status) countQuery = countQuery.eq("rights_status", status);
   const [{ count }, { count: pendingCount }, { count: metadataPendingCount }] = await Promise.all([
     countQuery,
@@ -69,22 +91,23 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
     supabase.from("catalog_songs").select("id", { count: "exact", head: true }).eq("rights_status", "pending").is("metadata_reviewed_at", null),
   ]);
   const resultCount = count ?? 0;
-  const pageCount = Math.max(1, Math.ceil(resultCount / CATALOG_PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(resultCount / ADMIN_CATALOG_PAGE_SIZE));
   const page = Math.min(requestedPage, pageCount);
 
   let songsQuery = supabase
     .from("catalog_songs")
-    .select("id, title, artist, genre, version_label, rights_status, rights_valid_until, metadata_reviewed_at, updated_at");
-  if (searchTerm) {
-    songsQuery = songsQuery.textSearch("catalog_search_vector", searchTerm, { config: "simple", type: "plain" });
-  }
+    .select("id, title, artist, genre, version_label, rights_status, rights_valid_until, metadata_reviewed_at, popularity_rank, updated_at");
+  for (const pattern of catalogSearchPatterns(searchTerm)) songsQuery = songsQuery.ilike("search_text", pattern);
   if (status === "metadata_pending") songsQuery = songsQuery.eq("rights_status", "pending").is("metadata_reviewed_at", null);
   else if (status === "metadata_reviewed") songsQuery = songsQuery.eq("rights_status", "pending").not("metadata_reviewed_at", "is", null);
+  else if (status === "popular") songsQuery = songsQuery.not("popularity_rank", "is", null);
   else if (status) songsQuery = songsQuery.eq("rights_status", status);
+  songsQuery = status === "popular"
+    ? songsQuery.order("artist", { ascending: true }).order("popularity_rank", { ascending: true })
+    : songsQuery.order("updated_at", { ascending: false });
   const { data: songs } = await songsQuery
-    .order("updated_at", { ascending: false })
     .order("id", { ascending: true })
-    .range((page - 1) * CATALOG_PAGE_SIZE, page * CATALOG_PAGE_SIZE - 1);
+    .range((page - 1) * ADMIN_CATALOG_PAGE_SIZE, page * ADMIN_CATALOG_PAGE_SIZE - 1);
 
   return (
     <main className="dashboard-page">
@@ -101,7 +124,7 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
           <div><h1>Catálogo central</h1><p>Cadastre músicas e cifras com autorização documentada.</p></div>
           <span className="status-live"><ShieldCheck size={13} /> Administração</span>
         </div>
-        {estado && notices[estado] && <p className="dashboard-flash" role="status">{notices[estado]}</p>}
+        {notice && <p className="dashboard-flash" role="status">{notice}</p>}
 
         <div className="catalog-import-entry">
           <div><strong>Importação em lote</strong><p>Registros entram como rascunhos privados. {metadataPendingCount ?? 0} aguardando validação dos dados.</p></div>
@@ -169,7 +192,17 @@ export default async function AdminCatalogPage({ searchParams }: CatalogAdminPag
             extraParams={{ situacao: status }}
           />
           {songs?.length ? (
-            <CatalogSongList key={`${status}:${searchTerm}:${page}`} songs={songs} />
+            <CatalogSongList
+              key={`${status}:${searchTerm}:${page}`}
+              songs={songs}
+              listState={{ situacao: status, q: searchTerm, pagina: String(page) }}
+              bulkPublish={status === "popular" ? {
+                reference: FACTUAL_METADATA_AUTHORIZATION.reference,
+                basis: FACTUAL_METADATA_AUTHORIZATION.basis,
+                validUntil: FACTUAL_METADATA_AUTHORIZATION.validUntil,
+                expired: factualMetadataAuthorizationExpired(),
+              } : null}
+            />
           ) : searchTerm || status ? (
             <section className="panel catalog-empty-panel catalog-search-empty">
               <span className="empty-queue-art"><ShieldCheck size={25} /></span>

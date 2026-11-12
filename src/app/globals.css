@@ -111,6 +111,7 @@ h3,
 }
 
 .brand-caption {
+  display: block;
   margin-top: 4px;
   color: var(--ink-soft);
   font-size: 11px;
@@ -1861,6 +1862,15 @@ h3,
 .catalog-bulk-review strong { color: var(--deep); font-size: 14px; }
 .catalog-bulk-review p { margin: 4px 0 0; color: #53635f; font-size: 12px; }
 .catalog-bulk-review-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.catalog-bulk-publish { display: grid; gap: 12px; margin: 0 0 18px; padding: 18px; }
+.catalog-bulk-publish h2 { margin: 0; color: var(--deep); font-size: 15px; }
+.catalog-bulk-publish > p { margin: 0; color: #53635f; font-size: 13px; }
+.catalog-bulk-publish dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: 12px; }
+.catalog-bulk-publish dt { color: #53635f; font-weight: 700; }
+.catalog-bulk-publish dd { margin: 0; color: var(--deep); overflow-wrap: anywhere; }
+.catalog-bulk-publish-form { display: grid; gap: 10px; justify-items: start; }
+.catalog-bulk-withdraw { padding-top: 12px; border-top: 1px solid var(--line); }
+@media (max-width: 680px) { .catalog-bulk-publish dl { grid-template-columns: 1fr; } .catalog-bulk-publish dd { margin-bottom: 6px; } }
 .catalog-song-title { display: flex; align-items: flex-start; gap: 11px; }
 .catalog-song-title > input { width: 18px; height: 18px; flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--stage); }
 .catalog-song-review-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
@@ -2691,6 +2701,335 @@ h3,
 
 @media (max-width: 420px) {
   .header-links > a:not(.button) {
+    display: none;
+  }
+}
+
+/* ---------- Ajustes da validação de 2026-11 ---------- */
+
+/* Hero escuro da página inicial: o botão contornado precisa de texto claro. */
+.landing-hero .button-outline {
+  color: #f7faf8;
+  border-color: rgba(247, 250, 248, 0.45);
+}
+
+.landing-hero .button-outline:hover:not(:disabled) {
+  border-color: #f7faf8;
+  background: rgba(247, 250, 248, 0.08);
+}
+
+.button-danger {
+  color: var(--red);
+  border-color: #e3c4bf;
+}
+
+.button-danger:hover:not(:disabled) {
+  border-color: var(--red);
+  background: rgba(169, 73, 63, 0.06);
+}
+
+/* Fila do músico em cartões, legível no celular durante o show. */
+.queue-list {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.queue-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f7faf8;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.queue-item:first-child {
+  background: var(--stage-soft);
+  border-color: #bcd8cf;
+}
+
+.queue-position {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--deep);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.queue-item-copy {
+  min-width: 0;
+}
+
+.queue-item-copy strong,
+.queue-item-copy span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queue-item-copy strong {
+  color: var(--deep);
+  font-size: 15px;
+}
+
+.queue-item-copy span {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.queue-item-copy .queue-item-meta {
+  margin-top: 2px;
+  color: #74827d;
+  font-size: 11px;
+}
+
+.queue-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* QR code: baixar e imprimir. */
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.qr-print-sheet {
+  display: none;
+}
+
+@media print {
+  body:has(.qr-print-sheet) * {
+    visibility: hidden;
+  }
+
+  body:has(.qr-print-sheet) .qr-print-sheet,
+  body:has(.qr-print-sheet) .qr-print-sheet * {
+    visibility: visible;
+  }
+
+  .qr-print-sheet {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px;
+    color: #000;
+    background: #fff;
+    text-align: center;
+  }
+
+  .qr-print-sheet h2 {
+    margin: 0 0 12px;
+    font-size: 40px;
+  }
+
+  .qr-print-sheet p {
+    max-width: 420px;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .qr-print-sheet .qr-print-kicker {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .qr-print-sheet .qr-print-url {
+    font-size: 14px;
+  }
+}
+
+/* Repertório: abas, seleção em lote e ações por música. */
+.repertoire-tabs {
+  margin-bottom: 18px;
+}
+
+.repertoire-bulk-bar {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  color: var(--ink-soft);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+}
+
+.catalog-song-title {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.catalog-song-check {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 3px;
+  accent-color: var(--stage);
+}
+
+.catalog-song-selected {
+  border-color: #bcd8cf;
+}
+
+.catalog-song-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.repertoire-price-warning {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+  color: #775729;
+  background: var(--amber-soft);
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.repertoire-price-warning p {
+  margin: 0;
+}
+
+.repertoire-price-warning .button {
+  justify-self: start;
+}
+
+/* Público: nome no pedido e acompanhamento dos próprios pedidos. */
+.requester-name-field {
+  display: grid;
+  gap: 5px;
+  margin: 16px 0 6px;
+}
+
+.requester-name-field span {
+  color: var(--deep);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.requester-name-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--deep);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  font: inherit;
+  font-size: 15px;
+}
+
+.requester-name-field small {
+  color: #75827f;
+  font-size: 11px;
+}
+
+.visitor-requests {
+  margin: 16px 0 6px;
+  padding: 14px;
+  background: var(--stage-soft);
+  border-radius: 14px;
+}
+
+.visitor-requests h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.visitor-requests ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.visitor-requests li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.visitor-requests li strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--deep);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visitor-request-status {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.visitor-request-status.queued {
+  color: var(--stage);
+}
+
+.visitor-request-status.played {
+  color: var(--deep);
+}
+
+.visitor-request-status.cancelled {
+  color: var(--red);
+}
+
+@media (max-width: 680px) {
+  .queue-item {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .queue-item-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand-caption {
     display: none;
   }
 }
