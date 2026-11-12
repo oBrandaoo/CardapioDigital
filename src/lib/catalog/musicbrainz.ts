@@ -1,5 +1,6 @@
 import "server-only";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { prepareRecording } from "@/lib/catalog/recording-metadata";
 
 const API_ROOT = "https://musicbrainz.org/ws/2";
 const USER_AGENT = "CardapioMusical/0.1 (https://github.com/oBrandaoo/CardapioDigital)";
@@ -97,19 +98,20 @@ export async function browseMusicBrainzRecordings(artistId: string, page: number
   const recordings: MusicBrainzRecording[] = rows.map((row) => {
     const recording = object(row);
     const credits = Array.isArray(recording["artist-credit"]) ? recording["artist-credit"] : [];
-    const artist = credits.map((entry) => {
+    const { title, artist, valid } = prepareRecording(string(recording.title), credits.map((entry) => {
       const credit = object(entry);
-      const joinphrase = typeof credit.joinphrase === "string" ? credit.joinphrase : "";
-      return `${string(credit.name) || string(object(credit.artist).name)}${joinphrase}`;
-    }).join("").trim();
-    const title = string(recording.title);
+      return {
+        name: string(credit.name) || string(object(credit.artist).name),
+        joinphrase: typeof credit.joinphrase === "string" ? credit.joinphrase : "",
+      };
+    }));
     const id = string(recording.id);
     return {
       id,
       title,
       artist,
       firstReleaseDate: string(recording["first-release-date"]),
-      canImport: UUID.test(id) && title.length > 0 && title.length <= 160 && artist.length > 0 && artist.length <= 160,
+      canImport: UUID.test(id) && valid,
     };
   });
   const reportedCount = Number(data["recording-count"]);

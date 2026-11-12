@@ -19,6 +19,14 @@ function readValidToken(value: string | undefined, secret: string) {
   return token;
 }
 
+// Read-only variant for Server Components, which cannot set cookies.
+export async function readRequestVisitorToken() {
+  const secret = process.env.REQUEST_TOKEN_SECRET;
+  if (!secret || secret.length < 32) return null;
+  const cookieStore = await cookies();
+  return readValidToken(cookieStore.get(cookieName)?.value, secret);
+}
+
 export async function getRequestVisitorToken() {
   const secret = process.env.REQUEST_TOKEN_SECRET;
   if (!secret || secret.length < 32) return null;
