@@ -11,38 +11,38 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 - [ ] Zico Dias & Ferrinho
 - [ ] Laureano & Soares
 - [X] Raul Torres & Florêncio
-- [ ] Alvarenga & Ranchinho
-- [ ] Tonico & Tinoco
-- [ ] Vieira & Vieirinha
-- [ ] Luizinho & Limeira
-- [ ] Sulino & Marrueiro
-- [ ] Palmeira & Biá
+- [X] Alvarenga & Ranchinho
+- [X] Tonico & Tinoco
+- [X] Vieira & Vieirinha
+- [X] Luizinho & Limeira
+- [X] Sulino & Marrueiro
+- [X] Palmeira & Biá
 
 ### Cantores e figuras importantes
 
 - [ ] Cornélio Pires
-- [ ] João Pacífico
-- [ ] Raul Torres
+- [X] João Pacífico
+- [X] Raul Torres 
 
 ## Música caipira e sertanejo raiz — anos 1940 a 1960
 
 ### Duplas e formações
 
-- [ ] Tião Carreiro & Pardinho
-- [ ] Liu & Léu
-- [ ] Jacó & Jacozinho
-- [ ] Cascatinha & Inhana
-- [ ] Pedro Bento & Zé da Estrada
-- [ ] Nenete & Dorinho
-- [ ] Tibagi & Miltinho
-- [ ] Belmonte & Amaraí
-- [ ] Zilo & Zalo
-- [ ] Irmãs Galvão (As Galvão)
-- [ ] Irmãs Castro
-- [ ] Duo Glacial
-- [ ] Duo Ciriema
+- [X] Tião Carreiro & Pardinho
+- [X] Liu & Léu
+- [X] Jacó & Jacozinho
+- [X] Cascatinha & Inhana
+- [X] Pedro Bento & Zé da Estrada
+- [X] Nenete & Dorinho
+- [X] Tibagi & Miltinho
+- [X] Belmonte & Amaraí
+- [X] Zilo & Zalo
+- [X] Irmãs Galvão (As Galvão)
+- [X] Irmãs Castro
+- [X] Duo Glacial
+- [X] Duo Ciriema
 - [ ] Duo Brasil Moreno
-- [ ] Célia & Celma
+- [X] Célia & Celma
 - [ ] Xandica & Xandoca
 - [ ] Primas Miranda
 - [ ] Nhá Zefa & Nhô Pai
@@ -50,8 +50,8 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 
 ### Cantoras importantes
 
-- [ ] Inezita Barroso
-- [ ] Inhana
+- [X] Inezita Barroso
+- [X] Inhana 
 - [ ] Mary Galvão
 - [ ] Marilene Galvão
 
@@ -59,116 +59,116 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 
 ### Duplas e grupos
 
-- [ ] Léo Canhoto & Robertinho
-- [ ] Milionário & José Rico
-- [ ] Matogrosso & Mathias
-- [ ] Trio Parada Dura
-- [ ] Pena Branca & Xavantinho
-- [ ] Lourenço & Lourival
-- [ ] Zé Mulato & Cassiano
+- [X] Léo Canhoto & Robertinho
+- [X] Milionário & José Rico
+- [X] Matogrosso & Mathias
+- [X] Trio Parada Dura
+- [X] Pena Branca & Xavantinho
+- [X] Lourenço & Lourival
+- [X] Zé Mulato & Cassiano 
 
 ### Cantores solo
 
-- [ ] Sérgio Reis
-- [ ] Renato Teixeira
-- [ ] Almir Sater
+- [X] Sérgio Reis
+- [X] Renato Teixeira
+- [X] Almir Sater
 
 ## Sertanejo romântico — anos 1980 e 1990
 
 ### Duplas e grupos
 
-- [ ] Chitãozinho & Xororó
-- [ ] Leandro & Leonardo
-- [ ] Zezé Di Camargo & Luciano
-- [ ] João Paulo & Daniel
-- [ ] Chrystian & Ralf
-- [ ] João Mineiro & Marciano
-- [ ] Gian & Giovani
-- [ ] Gilberto & Gilmar
-- [ ] Chico Rey & Paraná
-- [ ] Rick & Renner
-- [ ] Cezar & Paulinho
-- [ ] Teodoro & Sampaio
-- [ ] Duduca & Dalvan
-- [ ] Durval & Davi
-- [ ] Edson & Hudson
-- [ ] Rionegro & Solimões
-- [ ] As Marcianas
+- [X] Chitãozinho & Xororó
+- [X] Leandro & Leonardo
+- [X] Zezé Di Camargo & Luciano
+- [X] João Paulo & Daniel
+- [X] Chrystian & Ralf
+- [X] João Mineiro & Marciano
+- [X] Gian & Giovani
+- [X] Gilberto & Gilmar
+- [X] Chico Rey & Paraná
+- [X] Rick & Renner
+- [X] Cezar & Paulinho
+- [X] Teodoro & Sampaio
+- [X] Duduca & Dalvan
+- [X] Durval & Davi
+- [X] Edson & Hudson
+- [X] Rionegro & Solimões
+- [X] As Marcianas
 
 ### Cantores solo
 
-- [ ] Roberta Miranda
-- [ ] Nalva Aguiar
-- [ ] Sula Miranda
-- [ ] Daniel
-- [ ] Leonardo
+- [X] Roberta Miranda
+- [X] Nalva Aguiar
+- [X] Sula Miranda
+- [X] Daniel
+- [ ] Leonardo 
 
 ## Sertanejo universitário — anos 2000 e início dos 2010
 
 ### Duplas
 
-- [ ] Bruno & Marrone
-- [ ] Jorge & Mateus
-- [ ] João Bosco & Vinícius
-- [ ] César Menotti & Fabiano
-- [ ] Victor & Leo
-- [ ] Fernando & Sorocaba
-- [ ] João Neto & Frederico
-- [ ] Guilherme & Santiago
-- [ ] Hugo Pena & Gabriel
-- [ ] Marcos & Belutti
-- [ ] Maria Cecília & Rodolfo
-- [ ] Munhoz & Mariano
-- [ ] Thaeme & Thiago
-- [ ] Israel & Rodolffo
-- [ ] Henrique & Diego
+- [X] Bruno & Marrone
+- [X] Jorge & Mateus
+- [X] João Bosco & Vinícius
+- [X] César Menotti & Fabiano
+- [X] Victor & Leo
+- [X] Fernando & Sorocaba
+- [X] João Neto & Frederico
+- [X] Guilherme & Santiago
+- [X] Hugo Pena & Gabriel
+- [X] Marcos & Belutti
+- [X] Maria Cecília & Rodolfo
+- [X] Munhoz & Mariano
+- [X] Thaeme & Thiago
+- [ ] Israel & Rodolffo 
+- [X] Henrique & Diego
 
 ### Cantores solo
 
-- [ ] Luan Santana
-- [ ] Michel Teló
-- [ ] Gusttavo Lima
-- [ ] Cristiano Araújo
-- [ ] Paula Fernandes
-- [ ] Eduardo Costa
-- [ ] Lucas Lucco
+- [X] Luan Santana
+- [X] Michel Teló
+- [X] Gusttavo Lima
+- [X] Cristiano Araújo
+- [X] Paula Fernandes
+- [ ] Eduardo Costa 
+- [X] Lucas Lucco
 
 ## Feminejo e sertanejo recente — anos 2010 em diante
 
 ### Cantoras solo
 
-- [ ] Marília Mendonça
-- [ ] Naiara Azevedo
-- [ ] Lauana Prado
-- [ ] Paula Mattos
-- [ ] Yasmin Santos
-- [ ] Bruna Viola
-- [ ] Ana Castela
-- [ ] Simone Mendes
-- [ ] Mariana Fagundes
-- [ ] Luiza Martins
+- [X] Marília Mendonça
+- [X] Naiara Azevedo
+- [X] Lauana Prado
+- [X] Paula Mattos
+- [X] Yasmin Santos
+- [X] Bruna Viola
+- [X] Ana Castela
+- [X] Simone Mendes
+- [X] Mariana Fagundes
+- [X] Luiza Martins
 
 ### Duplas femininas
 
-- [ ] Maiara & Maraisa
-- [ ] Simone & Simaria
-- [ ] Day & Lara
-- [ ] Júlia & Rafaela
-- [ ] Irmãs Barbosa
+- [X] Maiara & Maraisa
+- [X] Simone & Simaria
+- [X] Day & Lara
+- [X] Júlia & Rafaela
+- [X] Irmãs Barbosa
 - [ ] Leyde & Laura
 
 ### Duplas masculinas
 
-- [ ] Henrique & Juliano
-- [ ] Zé Neto & Cristiano
-- [ ] Matheus & Kauan
-- [ ] Hugo & Guilherme
-- [ ] Diego & Victor Hugo
-- [ ] George Henrique & Rodrigo
-- [ ] Guilherme & Benuto
-- [ ] Clayton & Romário
-- [ ] Bruno & Barretto
-- [ ] Fred & Fabrício
+- [X] Henrique & Juliano
+- [X] Zé Neto & Cristiano
+- [X] Matheus & Kauan
+- [X] Hugo & Guilherme
+- [X] Diego & Victor Hugo
+- [ ] George Henrique & Rodrigo 
+- [X] Guilherme & Benuto
+- [X] Clayton & Romário
+- [X] Bruno & Barretto
+- [X] Fred & Fabrício
 
 ### Outros cantores solo de destaque
 

@@ -21,7 +21,7 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 
 - [X] Dalva de Oliveira
 - [X] Ângela Maria
-- [ ] Dolores Duran
+- [X] Dolores Duran <!-- mbid: 70146c1b-fb60-4958-ac56-998de6a1f472 -->
 - [X] Maysa
 - [X] Elizeth Cardoso
 
@@ -30,216 +30,216 @@ Marque os artistas conforme forem revisados ou adicionados ao catálogo. A lista
 ### Cantores, compositores e instrumentistas
 
 - [X] Tom Jobim
-- [ ] João Gilberto
-- [ ] Vinicius de Moraes
-- [ ] Carlos Lyra
-- [ ] Roberto Menescal
-- [ ] Johnny Alf
-- [ ] João Donato
-- [ ] Baden Powell
-- [ ] Marcos Valle
-- [ ] Sérgio Mendes
+- [X] João Gilberto
+- [X] Vinicius de Moraes
+- [X] Carlos Lyra
+- [X] Roberto Menescal
+- [X] Johnny Alf
+- [X] João Donato
+- [X] Baden Powell
+- [X] Marcos Valle
+- [X] Sérgio Mendes
 
 ### Cantoras
 
-- [ ] Nara Leão
-- [ ] Sylvia Telles
-- [ ] Astrud Gilberto
-- [ ] Wanda Sá
-- [ ] Leny Andrade
-- [ ] Miúcha
+- [X] Nara Leão
+- [X] Sylvia Telles
+- [X] Astrud Gilberto
+- [X] Wanda Sá
+- [X] Leny Andrade
+- [X] Miúcha
 
 ### Grupos
 
-- [ ] Os Cariocas
-- [ ] Tamba Trio
+- [X] Os Cariocas
+- [X] Tamba Trio
 
 ## Era dos festivais e canção de protesto — anos 1960
 
 ### Cantores e compositores
 
-- [ ] Chico Buarque
-- [ ] Edu Lobo
-- [ ] Geraldo Vandré
-- [ ] Jair Rodrigues
-- [ ] Wilson Simonal
-- [ ] Dori Caymmi
-- [ ] Sérgio Ricardo
-- [ ] Taiguara
-- [ ] Paulinho da Viola
+- [X] Chico Buarque
+- [X] Edu Lobo
+- [X] Geraldo Vandré
+- [X] Jair Rodrigues
+- [X] Wilson Simonal
+- [X] Dori Caymmi
+- [X] Sérgio Ricardo <!-- mbid: 482a9b74-712a-4902-a5b2-69ebe10c7f33 -->
+- [X] Taiguara
+- [X] Paulinho da Viola
 
 ### Cantoras
 
-- [ ] Elis Regina
-- [ ] Nana Caymmi
-- [ ] Maria Bethânia
-- [ ] Elza Soares
+- [X] Elis Regina
+- [X] Nana Caymmi
+- [X] Maria Bethânia
+- [X] Elza Soares
 
 ### Grupos
 
-- [ ] MPB4
-- [ ] Quarteto em Cy
+- [X] MPB4
+- [X] Quarteto em Cy
 
 ## Tropicália — fim dos anos 1960
 
-- [ ] Caetano Veloso
-- [ ] Gilberto Gil
-- [ ] Gal Costa
-- [ ] Os Mutantes
-- [ ] Tom Zé
+- [X] Caetano Veloso
+- [X] Gilberto Gil
+- [X] Gal Costa
+- [X] Os Mutantes
+- [X] Tom Zé
 
 ## Clube da Esquina — anos 1970
 
-- [ ] Milton Nascimento
-- [ ] Lô Borges
-- [ ] Beto Guedes
-- [ ] Toninho Horta
-- [ ] Flávio Venturini
-- [ ] Wagner Tiso
-- [ ] Tavinho Moura
-- [ ] 14 Bis
+- [X] Milton Nascimento
+- [X] Lô Borges
+- [X] Beto Guedes
+- [X] Toninho Horta
+- [X] Flávio Venturini
+- [X] Wagner Tiso
+- [X] Tavinho Moura
+- [X] 14 Bis <!-- mbid: 40c3dbd1-66c8-4c12-b673-f22d52177b45 -->
 
 ## Anos 1970 — novos compositores, nordeste e vanguarda
 
 ### Cantores e compositores
 
-- [ ] Djavan
-- [ ] Ivan Lins
-- [ ] Gonzaguinha
-- [ ] João Bosco
-- [ ] Belchior
-- [ ] Fagner
-- [ ] Ednardo
-- [ ] Alceu Valença
-- [ ] Zé Ramalho
-- [ ] Geraldo Azevedo
-- [ ] Dominguinhos
-- [ ] Moraes Moreira
-- [ ] Luiz Melodia
-- [ ] Sérgio Sampaio
-- [ ] Jards Macalé
-- [ ] Walter Franco
-- [ ] Ney Matogrosso
-- [ ] Guilherme Arantes
-- [ ] Oswaldo Montenegro
-- [ ] Raul Seixas
+- [X] Djavan
+- [X] Ivan Lins
+- [X] Gonzaguinha
+- [X] João Bosco <!-- mbid: 150ffd99-a98e-486e-8c84-77d77f03747e -->
+- [X] Belchior
+- [X] Fagner
+- [X] Ednardo
+- [X] Alceu Valença
+- [X] Zé Ramalho
+- [X] Geraldo Azevedo
+- [X] Dominguinhos
+- [X] Moraes Moreira
+- [X] Luiz Melodia
+- [X] Sérgio Sampaio
+- [X] Jards Macalé
+- [X] Walter Franco
+- [X] Ney Matogrosso
+- [X] Guilherme Arantes
+- [X] Oswaldo Montenegro
+- [X] Raul Seixas
 
 ### Cantoras
 
-- [ ] Simone
-- [ ] Fafá de Belém
-- [ ] Elba Ramalho
-- [ ] Joyce Moreno
-- [ ] Clara Nunes
-- [ ] Beth Carvalho
-- [ ] Alcione
-- [ ] Ângela Ro Ro
-- [ ] Joanna
-- [ ] Zizi Possi
-- [ ] Baby do Brasil
+- [X] Simone
+- [X] Fafá de Belém
+- [X] Elba Ramalho
+- [X] Joyce Moreno
+- [X] Clara Nunes
+- [X] Beth Carvalho
+- [X] Alcione
+- [X] Ângela Ro Ro
+- [X] Joanna
+- [X] Zizi Possi
+- [X] Baby do Brasil
 
 ### Duplas e grupos
 
-- [ ] Novos Baianos
-- [ ] Secos & Molhados
-- [ ] Boca Livre
-- [ ] Quinteto Violado
-- [ ] A Cor do Som
-- [ ] Sá & Guarabyra
-- [ ] Kleiton & Kledir
+- [X] Novos Baianos
+- [X] Secos & Molhados
+- [X] Boca Livre <!-- mbid: 6fa56da3-9e74-4920-8c76-947a43dd7fab -->
+- [X] Quinteto Violado
+- [X] A Cor do Som
+- [X] Sá & Guarabyra
+- [X] Kleiton & Kledir
 
 ## Samba-rock, soul e suingue — fronteiras da MPB
 
-- [ ] Jorge Ben Jor
-- [ ] Tim Maia
-- [ ] Cassiano
-- [ ] Hyldon
-- [ ] Sandra de Sá
-- [ ] Banda Black Rio
-- [ ] Ed Motta
+- [X] Jorge Ben Jor
+- [X] Tim Maia
+- [X] Cassiano <!-- mbid: 74a9fd54-13de-4aed-aada-31b992745865 -->
+- [X] Hyldon
+- [X] Sandra de Sá
+- [X] Banda Black Rio
+- [X] Ed Motta
 
 ## Anos 1980 e 1990
 
 ### Cantoras
 
-- [ ] Marisa Monte
-- [ ] Adriana Calcanhotto
-- [ ] Zélia Duncan
-- [ ] Cássia Eller
-- [ ] Leila Pinheiro
-- [ ] Marina Lima
-- [ ] Rita Lee
-- [ ] Mônica Salmaso
-- [ ] Virgínia Rodrigues
+- [X] Marisa Monte
+- [X] Adriana Calcanhotto
+- [X] Zélia Duncan
+- [X] Cássia Eller
+- [X] Leila Pinheiro
+- [X] Marina Lima
+- [X] Rita Lee
+- [X] Mônica Salmaso
+- [X] Virgínia Rodrigues
 
 ### Cantores e compositores
 
-- [ ] Lenine
-- [ ] Chico César
-- [ ] Zeca Baleiro
-- [ ] Arnaldo Antunes
-- [ ] Paulinho Moska
-- [ ] Vander Lee
-- [ ] Carlinhos Brown
-- [ ] Lulu Santos
+- [X] Lenine
+- [X] Chico César
+- [X] Zeca Baleiro
+- [X] Arnaldo Antunes
+- [X] Paulinho Moska
+- [X] Vander Lee
+- [X] Carlinhos Brown
+- [X] Lulu Santos
 
 ### Grupos
 
-- [ ] Chico Science & Nação Zumbi
+- [X] Chico Science & Nação Zumbi
 
 ## Anos 2000
 
 ### Cantoras
 
-- [ ] Ana Carolina
-- [ ] Maria Rita
-- [ ] Vanessa da Mata
-- [ ] Roberta Sá
-- [ ] Mart'nália
-- [ ] Maria Gadú
-- [ ] Céu
-- [ ] Mallu Magalhães
-- [ ] Teresa Cristina
-- [ ] Mariana Aydar
+- [X] Ana Carolina
+- [X] Maria Rita <!-- mbid: 3c12ecf2-91da-4d4a-8462-e4d5d9e273e7 -->
+- [X] Vanessa da Mata
+- [X] Roberta Sá
+- [X] Mart'nália
+- [X] Maria Gadú
+- [X] Céu
+- [X] Mallu Magalhães
+- [X] Teresa Cristina
+- [X] Mariana Aydar
 
 ### Cantores e compositores
 
-- [ ] Seu Jorge
-- [ ] Nando Reis
-- [ ] Marcelo Camelo
+- [X] Seu Jorge
+- [X] Nando Reis
+- [X] Marcelo Camelo
 
 ### Grupos
 
-- [ ] Tribalistas
+- [X] Tribalistas
 
 ## Nova MPB — anos 2010 em diante
 
 ### Cantoras
 
-- [ ] Tiê
-- [ ] Tulipa Ruiz
-- [ ] Ana Vilela
-- [ ] Liniker
-- [ ] Luedji Luna
-- [ ] Xênia França
-- [ ] Duda Beat
-- [ ] Marina Sena
-- [ ] Agnes Nunes
+- [X] Tiê
+- [X] Tulipa Ruiz
+- [X] Ana Vilela
+- [X] Liniker
+- [X] Luedji Luna <!-- mbid: e538ba99-5bab-434b-ac8d-dadb24a44faa -->
+- [X] Xênia França
+- [X] Duda Beat
+- [X] Marina Sena
+- [X] Agnes Nunes
 
 ### Cantores e compositores
 
-- [ ] Tiago Iorc
-- [ ] Silva
-- [ ] Marcelo Jeneci
-- [ ] Rubel
-- [ ] Tim Bernardes
-- [ ] Johnny Hooker
-- [ ] Zé Manoel
-- [ ] Vitor Kley
+- [X] Tiago Iorc
+- [X] Silva
+- [X] Marcelo Jeneci
+- [X] Rubel
+- [X] Tim Bernardes
+- [X] Johnny Hooker
+- [X] Zé Manoel
+- [X] Vitor Kley
 
 ### Duplas e grupos
 
-- [ ] Anavitória
-- [ ] Gilsons
-- [ ] Melim
-- [ ] Bala Desejo
+- [X] Anavitória
+- [X] Gilsons
+- [X] Melim
+- [X] Bala Desejo <!-- mbid: 8e6d22bd-e84e-4a87-97fd-6844c1d15d8d -->

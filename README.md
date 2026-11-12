@@ -62,7 +62,7 @@ npm run importar:artistas -- lista-artistas-mpb.md --genero MPB --artista "Djava
 
 Interromper e rodar de novo é seguro: duplicatas são ignoradas pelo banco e o artista só é marcado depois de concluído. Quando o nome não for encontrado ou houver homônimos, o script lista os candidatos e pula o artista; anote o identificador correto na linha (`- [ ] Simone <!-- mbid: ... -->`) e rode de novo.
 
-Cada item pendente aparece no catálogo administrativo. A equipe pode validar os dados de até 30 músicas por página de uma vez, sem cifra ou documentação de direitos, usando o filtro **Dados a revisar**. A revisão individual permite corrigir título, artista e gênero, além de adicionar uma cifra TXT opcional. A validação dos dados mantém o registro privado. A migração `202610100002_catalog_metadata_review.sql` adiciona esse controle independente da publicação e permite publicar músicas sem cifra. Para publicar, use a tela separada **Publicação** e registre a autorização documentada para os dados da música e, quando houver, para a cifra. A migração `202610060002_catalog_song_audit.sql` bloqueia novas duplicatas por título, artista e versão e registra criação, edição e mudança de estado com o administrador responsável. A migração `202610060003_simplify_catalog_rights.sql` substitui o antigo campo de origem pela referência da autorização e remove a coluna de território e seus filtros. Como o campo anterior podia conter apenas uma origem sem licença, a migração coloca músicas já aprovadas em estado pendente para nova revisão. Aplique as migrations em ordem antes de usar a importação e a revisão.
+Cada item pendente aparece no catálogo administrativo. A equipe pode validar os dados de até 100 músicas por página de uma vez, sem cifra ou documentação de direitos, usando o filtro **Dados a revisar**. A revisão individual permite corrigir título, artista e gênero, além de adicionar uma cifra TXT opcional. A validação dos dados mantém o registro privado. A migração `202610100002_catalog_metadata_review.sql` adiciona esse controle independente da publicação e permite publicar músicas sem cifra. Para publicar, use a tela separada **Publicação** e registre a autorização documentada para os dados da música e, quando houver, para a cifra. A migração `202610060002_catalog_song_audit.sql` bloqueia novas duplicatas por título, artista e versão e registra criação, edição e mudança de estado com o administrador responsável. A migração `202610060003_simplify_catalog_rights.sql` substitui o antigo campo de origem pela referência da autorização e remove a coluna de território e seus filtros. Como o campo anterior podia conter apenas uma origem sem licença, a migração coloca músicas já aprovadas em estado pendente para nova revisão. Aplique as migrations em ordem antes de usar a importação e a revisão.
 
 A migração `202611100001_catalog_duplicate_index.sql` troca a verificação de duplicatas exatas por um índice único (antes, cada inserção percorria o catálogo inteiro). A migração `202611100002_catalog_duplicate_cleanup.sql` adiciona ferramentas para remover duplicatas aproximadas depois de uma importação em massa. Essas duplicatas ignoram acentos, maiúsculas e pontuação, sufixos de versão no título ("(Ao Vivo)", "- Remastered 2011", "(feat. X)") e participações no artista ("feat.", "part."). Créditos conjuntos como "A & B" continuam distintos. No SQL Editor do Supabase:
 
@@ -75,6 +75,42 @@ vacuum analyze public.catalog_songs;
 ```
 
 Em cada grupo, fica o registro mais completo: aprovado, com cifra, com autorização, em uso, revisado e com o título mais curto. Só são apagados rascunhos pendentes sem cifra, sem autorização e fora de repertórios e pedidos. Os demais aparecem como `review` para decisão manual. Cada remoção fica no histórico da música mantida como "Duplicata mesclada".
+
+### Limpeza dos metadados importados
+
+Desde a migração `202611110001_catalog_metadata_cleanup.sql`, a importação (script e tela) já grava títulos sem sufixos de versão ("Sozinho (Ao Vivo)" → "Sozinho"), tira participações do artista ("A feat. B" → "A"), usa " & " quando o MusicBrainz não informa separador entre dois artistas e pula gravações com mais de 3 artistas e medleys. As regras ficam em `src/lib/catalog/recording-metadata.ts`. Para corrigir o que já foi importado, rode no SQL Editor, nesta ordem:
+
+```sql
+select * from private.remove_catalog_duplicates(true);    -- repita até removed = 0
+select * from private.clean_catalog_metadata();           -- prévia: coletivas/medleys e títulos a renomear
+select * from private.clean_catalog_metadata(true);       -- um lote; repita até removed e renamed = 0
+select * from private.remove_catalog_duplicates(true);    -- resolve os blocked_renames que sobrarem
+select * from private.catalog_artist_suspects;            -- nomes colados, ex.: "JobimVinicius"
+select * from private.rename_catalog_artist('Nome Errado', 'Nome Certo');
+vacuum analyze public.catalog_songs;
+```
+
+`clean_catalog_metadata` só altera rascunhos intocados: pendentes, sem cifra, sem autorização, nunca validados e fora de repertórios e pedidos. Remoções e renomeações ficam no histórico (`catalog_song_audit`). A lista de nomes suspeitos também traz nomes reais como "BaianaSystem": confira antes de renomear.
+
+### Recorte das mais conhecidas
+
+`npm run marcar:populares` marca em `catalog_songs.popularity_rank` as músicas mais ouvidas de cada artista das listas, pela contagem de execuções do ListenBrainz. O script não aprova nem publica nada. O recorte aparece no filtro **Mais conhecidas** de `/admin/catalogo`. O ListenBrainz exige um token gratuito: crie uma conta, copie o token em https://listenbrainz.org/settings/ e defina `LISTENBRAINZ_TOKEN` no `.env.local`.
+
+```bash
+npm run marcar:populares -- lista-artistas-mpb.md lista-artistas-sertanejo.md --simular   # mostra as mais ouvidas, sem gravar
+npm run marcar:populares -- lista-artistas-mpb.md lista-artistas-sertanejo.md --top 30
+```
+
+Cada execução recalcula o recorte inteiro, então passe todas as listas juntas. Rode depois da limpeza: a correspondência é feita pela mesma chave das duplicatas (título e artista sem acentos, sufixos e participações), e gravações que ficaram de fora da importação não são marcadas.
+
+### Publicação em lote das mais conhecidas
+
+No filtro **Mais conhecidas** de `/admin/catalogo` (100 músicas por página):
+
+1. **Selecionar dados a validar** → **Validar dados**. Isso confirma título, artista e gênero e mantém as músicas privadas.
+2. **Selecionar prontas para publicar**, marcar a confirmação → **Publicar**. As músicas recebem a autorização de metadados factuais (Decisão interna nº 1/2026, válida até 11/11/2027, texto em `src/lib/catalog/metadata-authorization.ts`).
+
+O servidor só publica músicas pendentes, com dados validados, do recorte e sem cifra. Músicas com cifra precisam da publicação individual com a autorização da cifra. Depois de 11/11/2027, o catálogo público esconde essas músicas automaticamente e a publicação em lote fica bloqueada até uma nova decisão. O botão **Retirar todas publicadas com esta autorização** tira todas do público de uma vez, marcando-as como contestadas.
 
 ## Limites desta etapa
 

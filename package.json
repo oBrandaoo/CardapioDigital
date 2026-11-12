@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "importar:artistas": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --disable-warning=ExperimentalWarning scripts/importar-artistas.mts",
+    "importar:artistas": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/importar-artistas.mts",
     "importar:sertanejo": "npm run importar:artistas -- lista-artistas-sertanejo.md --genero Sertanejo",
-    "importar:mpb": "npm run importar:artistas -- lista-artistas-mpb.md --genero MPB"
+    "importar:mpb": "npm run importar:artistas -- lista-artistas-mpb.md --genero MPB",
+    "marcar:populares": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/marcar-populares.mts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

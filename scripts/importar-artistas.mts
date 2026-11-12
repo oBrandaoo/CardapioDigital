@@ -7,196 +7,28 @@
 // Segue as mesmas regras da importação em /admin/catalogo/musicbrainz
 // (src/app/admin/catalogo/musicbrainz/actions.ts e src/lib/catalog/musicbrainz.ts):
 // só metadados (título e artista), sem cifra, versão "Original", duplicatas
-// ignoradas pelo gatilho do banco e intervalo mínimo de 1,1 s entre chamadas.
+// ignoradas pelo índice único do banco e intervalo mínimo de 1,1 s entre chamadas.
+// Títulos perdem sufixos de versão ("(Ao Vivo)", "- Remastered"), participações
+// saem do artista e gravações coletivas (mais de 3 artistas) ou medleys são
+// puladas (src/lib/catalog/recording-metadata.ts).
 // Metadados do MusicBrainz não autorizam publicação: tudo entra como pendente.
 //
 // Para fixar um artista ambíguo, anote o MBID na linha da lista:
 //   - [ ] Simone <!-- mbid: 00000000-0000-0000-0000-000000000000 -->
 
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { exactSongKey, prepareRecording, type RecordingMetadata } from "../src/lib/catalog/recording-metadata.ts";
+import {
+  createAdminClient, describe, FatalError, fmt, markDone, musicBrainzGet, normalizeName, object,
+  parseList, resolveArtist, runMain, text, UUID,
+} from "./lib/musicbrainz-script.mts";
 
-const API_ROOT = "https://musicbrainz.org/ws/2";
-const USER_AGENT = "CardapioMusical/0.1 (https://github.com/oBrandaoo/CardapioDigital)";
 const PAGE_SIZE = 100; // máximo aceito pelo MusicBrainz em consultas "browse"
-const MIN_INTERVAL_MS = 1100;
 const INSERT_CONCURRENCY = 8;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const LIST_LINE = /^(\s*[-*]\s*\[)([ xX])(\]\s+)(.+?)\s*$/;
-const MBID_NOTE = /<!--\s*mbid:\s*([0-9a-f-]{36})\s*-->/i;
 
-type Json = Record<string, unknown>;
-
-type ListEntry = {
-  lines: string[];
-  label: string;
-  names: string[];
-  mbid: string | null;
-};
-
-type Candidate = {
-  id: string;
-  name: string;
-  country: string;
-  disambiguation: string;
-  score: number;
-  names: string[];
-};
-
-type Resolution =
-  | { kind: "ok"; artist: Candidate; via: string }
-  | { kind: "ambiguous" | "missing"; candidates: Candidate[] };
-
-class FatalError extends Error {}
-
-// ---------- utilidades ----------
-
-function object(value: unknown): Json {
-  return value !== null && typeof value === "object" && !Array.isArray(value) ? (value as Json) : {};
-}
-
-function text(value: unknown): string {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function normalizeName(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/&/g, " e ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const fmt = (n: number) => n.toLocaleString("pt-BR");
-
-// ---------- lista Markdown ----------
-
-function parseList(content: string): ListEntry[] {
-  const byKey = new Map<string, ListEntry>();
-  for (const line of content.split(/\r?\n/)) {
-    const match = LIST_LINE.exec(line);
-    if (!match || match[2] !== " ") continue;
-    const raw = match[4];
-    const mbid = MBID_NOTE.exec(raw)?.[1] ?? null;
-    const label = raw.replace(MBID_NOTE, "").trim();
-    // "Irmãs Galvão (As Galvão)" → ["Irmãs Galvão", "As Galvão"]
-    const names = [label.replace(/\s*\([^)]*\)\s*/g, " ").trim()];
-    for (const alias of label.matchAll(/\(([^)]+)\)/g)) names.push(alias[1].trim());
-    const key = mbid ?? normalizeName(names[0]);
-    const existing = byKey.get(key);
-    if (existing) existing.lines.push(line);
-    else byKey.set(key, { lines: [line], label, names: names.filter(Boolean), mbid });
-  }
-  return [...byKey.values()];
-}
-
-async function markDone(file: string, entry: ListEntry) {
-  // Relê o arquivo para não sobrescrever edições feitas durante a importação.
-  const content = await readFile(file, "utf8");
-  const eol = content.includes("\r\n") ? "\r\n" : "\n";
-  const lines = content.split(/\r?\n/);
-  for (const original of entry.lines) {
-    const index = lines.indexOf(original);
-    if (index >= 0) lines[index] = original.replace(LIST_LINE, (_all, a, _b, c, d) => `${a}X${c}${d}`);
-  }
-  await writeFile(file, lines.join(eol), "utf8");
-}
-
-// ---------- MusicBrainz ----------
-
-let localNextSlot = 0;
-
-async function waitForSlot(admin: SupabaseClient | null) {
-  if (admin) {
-    // Mesmo controle usado pelo app: coordena com importações abertas no navegador.
-    const { data, error } = await admin.rpc("reserve_musicbrainz_request_slot");
-    if (error || typeof data !== "string") {
-      throw new FatalError(`Não foi possível reservar o intervalo do MusicBrainz no banco (${error?.code ?? "sem resposta"}). As migrations foram aplicadas?`);
-    }
-    const delay = new Date(data).getTime() - Date.now();
-    if (delay > 0) await sleep(delay);
-    return;
-  }
-  const now = Date.now();
-  const slot = Math.max(now, localNextSlot);
-  localNextSlot = slot + MIN_INTERVAL_MS;
-  if (slot > now) await sleep(slot - now);
-}
-
-async function musicBrainzGet(admin: SupabaseClient | null, path: string, params: URLSearchParams): Promise<Json> {
-  params.set("fmt", "json");
-  for (let attempt = 0; attempt < 6; attempt += 1) {
-    await waitForSlot(admin);
-    let status = 0;
-    try {
-      const response = await fetch(`${API_ROOT}/${path}?${params}`, {
-        headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
-        signal: AbortSignal.timeout(20_000),
-      });
-      status = response.status;
-      if (response.ok) return object(await response.json());
-      if (status !== 429 && status !== 503 && status < 500) {
-        throw new FatalError(`MusicBrainz respondeu ${status} para ${path}.`);
-      }
-    } catch (error) {
-      if (error instanceof FatalError) throw error;
-    }
-    const wait = 2000 * 2 ** attempt;
-    console.warn(`  MusicBrainz indisponível (${status || "rede"}); nova tentativa em ${wait / 1000}s…`);
-    await sleep(wait);
-  }
-  throw new FatalError("MusicBrainz continua indisponível. Rode o comando de novo mais tarde; o que já foi salvo será ignorado.");
-}
-
-function toCandidate(row: unknown): Candidate {
-  const artist = object(row);
-  const aliases = Array.isArray(artist.aliases) ? artist.aliases.map((alias) => text(object(alias).name)) : [];
-  const name = text(artist.name);
-  return {
-    id: text(artist.id),
-    name,
-    country: text(artist.country) || text(object(artist.area).name),
-    disambiguation: text(artist.disambiguation),
-    score: Number(artist.score) || 0,
-    names: [name, text(artist["sort-name"]), ...aliases].filter(Boolean),
-  };
-}
-
-function isBrazilian(candidate: Candidate) {
-  return candidate.country === "BR" || /^(brazil|brasil)$/i.test(candidate.country) || /brazil|brasil/i.test(candidate.disambiguation);
-}
-
-async function resolveArtist(admin: SupabaseClient | null, entry: ListEntry): Promise<Resolution> {
-  if (entry.mbid) {
-    if (!UUID.test(entry.mbid)) return { kind: "missing", candidates: [] };
-    const data = await musicBrainzGet(admin, `artist/${entry.mbid}`, new URLSearchParams());
-    const artist = toCandidate({ ...data, score: 100 });
-    if (!UUID.test(artist.id)) return { kind: "missing", candidates: [] };
-    return { kind: "ok", artist, via: "MBID anotado" };
-  }
-
-  const data = await musicBrainzGet(admin, "artist", new URLSearchParams({ query: entry.names[0], dismax: "true", limit: "15" }));
-  const candidates = (Array.isArray(data.artists) ? data.artists : [])
-    .map(toCandidate)
-    .filter((candidate) => UUID.test(candidate.id) && candidate.name);
-  const wanted = new Set(entry.names.map(normalizeName));
-  const exact = candidates.filter((candidate) => candidate.names.some((name) => wanted.has(normalizeName(name))));
-  const brazilian = exact.filter(isBrazilian);
-
-  if (brazilian.length === 1) return { kind: "ok", artist: brazilian[0], via: "nome exato, Brasil" };
-  if (brazilian.length > 1) return { kind: "ambiguous", candidates: brazilian };
-  // Sem país no MusicBrainz: aceita só se for o único com o nome e o primeiro da busca.
-  if (exact.length === 1 && exact[0].id === candidates[0]?.id && !exact[0].country) {
-    return { kind: "ok", artist: exact[0], via: "nome exato, sem país informado" };
-  }
-  return { kind: exact.length ? "ambiguous" : "missing", candidates: (exact.length ? exact : candidates).slice(0, 5) };
-}
-
-type Recording = { title: string; artist: string; valid: boolean };
+type Recording = RecordingMetadata;
 
 async function browseRecordings(admin: SupabaseClient | null, artistId: string, offset: number, limit = PAGE_SIZE) {
   const data = await musicBrainzGet(admin, "recording", new URLSearchParams({
@@ -209,31 +41,18 @@ async function browseRecordings(admin: SupabaseClient | null, artistId: string, 
   const recordings: Recording[] = rows.map((row) => {
     const recording = object(row);
     const credits = Array.isArray(recording["artist-credit"]) ? recording["artist-credit"] : [];
-    const artist = credits.map((entry) => {
+    const prepared = prepareRecording(text(recording.title), credits.map((entry) => {
       const credit = object(entry);
-      const joinphrase = typeof credit.joinphrase === "string" ? credit.joinphrase : "";
-      return `${text(credit.name) || text(object(credit.artist).name)}${joinphrase}`;
-    }).join("").trim();
-    const title = text(recording.title);
-    return {
-      title,
-      artist,
-      valid: UUID.test(text(recording.id)) && title.length > 0 && title.length <= 160 && artist.length > 0 && artist.length <= 160,
-    };
+      return {
+        name: text(credit.name) || text(object(credit.artist).name),
+        joinphrase: typeof credit.joinphrase === "string" ? credit.joinphrase : "",
+      };
+    }));
+    if (!UUID.test(text(recording.id))) return { ...prepared, valid: false, reason: "invalid" };
+    return prepared;
   });
   const reported = Number(data["recording-count"]);
   return { recordings, count: Number.isFinite(reported) && reported >= 0 ? reported : recordings.length };
-}
-
-// ---------- Supabase ----------
-
-function createAdminClient(): SupabaseClient {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    throw new FatalError("Defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no .env ou .env.local.");
-  }
-  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }
 
 async function findImportAdmin(admin: SupabaseClient): Promise<{ id: string; email: string }> {
@@ -280,13 +99,6 @@ async function insertRecordings(admin: SupabaseClient, recordings: Recording[], 
   return { imported, skipped };
 }
 
-// ---------- execução ----------
-
-function describe(candidate: Candidate) {
-  const extra = [candidate.country, candidate.disambiguation].filter(Boolean).join(", ");
-  return `${candidate.name}${extra ? ` (${extra})` : ""} <!-- mbid: ${candidate.id} -->`;
-}
-
 async function main() {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
@@ -325,6 +137,7 @@ async function main() {
   let totalImported = 0;
   let totalSkipped = 0;
   let totalInvalid = 0;
+  let totalFiltered = 0;
   let totalRecordings = 0;
 
   for (const [position, entry] of entries.entries()) {
@@ -353,17 +166,31 @@ async function main() {
     }
 
     if (!admin || !importer) throw new FatalError("Cliente do Supabase não configurado.");
+    const seen = new Set<string>();
     let offset = 0;
     let count = 0;
     let imported = 0;
     let skipped = 0;
     let invalid = 0;
+    let filtered = 0;
     do {
       const batch = await browseRecordings(admin, artist.id, offset);
       count = batch.count;
-      const valid = batch.recordings.filter((song) => song.valid);
-      invalid += batch.recordings.length - valid.length;
-      const saved = await insertRecordings(admin, valid, genre, importer.id);
+      const fresh: Recording[] = [];
+      for (const song of batch.recordings) {
+        if (song.reason === "invalid") invalid += 1;
+        else if (!song.valid) filtered += 1;
+        else {
+          // Várias gravações viram o mesmo título depois da limpeza; só a primeira vai ao banco.
+          const key = exactSongKey(song.title, song.artist);
+          if (seen.has(key)) skipped += 1;
+          else {
+            seen.add(key);
+            fresh.push(song);
+          }
+        }
+      }
+      const saved = await insertRecordings(admin, fresh, genre, importer.id);
       imported += saved.imported;
       skipped += saved.skipped;
       offset += PAGE_SIZE;
@@ -377,17 +204,15 @@ async function main() {
     totalImported += imported;
     totalSkipped += skipped;
     totalInvalid += invalid;
-    console.log(`✔ ${prefix} → ${artist.name}: ${fmt(imported)} novas, ${fmt(skipped)} repetidas, ${fmt(invalid)} inválidas`);
+    totalFiltered += filtered;
+    console.log(`✔ ${prefix} → ${artist.name}: ${fmt(imported)} novas, ${fmt(skipped)} repetidas, ${fmt(filtered)} coletivas/medleys, ${fmt(invalid)} inválidas`);
   }
 
   console.log("\nResumo");
   if (dryRun) console.log(`  ${doneMbids.size} artista(s) identificados · ${fmt(totalRecordings)} gravações no MusicBrainz (antes de remover repetidas)`);
-  else console.log(`  ${fmt(totalImported)} músicas novas como pendentes · ${fmt(totalSkipped)} repetidas · ${fmt(totalInvalid)} inválidas`);
+  else console.log(`  ${fmt(totalImported)} músicas novas como pendentes · ${fmt(totalSkipped)} repetidas · ${fmt(totalFiltered)} coletivas/medleys · ${fmt(totalInvalid)} inválidas`);
   if (pendingReview.length) console.log(`  ${pendingReview.length} artista(s) precisam de MBID manual: ${pendingReview.join(", ")}`);
   if (!dryRun && totalImported) console.log("  Revise em /admin/catalogo?situacao=pending");
 }
 
-main().catch((error: unknown) => {
-  console.error(`\nErro: ${error instanceof Error ? error.message : String(error)}`);
-  process.exitCode = 1;
-});
+runMain(main);
