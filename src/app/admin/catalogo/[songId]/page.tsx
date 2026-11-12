@@ -23,7 +23,7 @@ export default async function SongReviewPage({ params, searchParams }: SongRevie
   if (!song) notFound();
   const pending = song.rights_status === "pending";
   const { data: audit } = await supabase.from("catalog_song_audit")
-    .select("id, operation, previous_status, new_status, changed_columns, changed_at, actor_id")
+    .select("id, operation, previous_status, new_status, changed_columns, details, changed_at, actor_id")
     .eq("song_id", song.id)
     .order("changed_at", { ascending: false })
     .limit(20);
@@ -71,7 +71,8 @@ export default async function SongReviewPage({ params, searchParams }: SongRevie
             <ul>
               {audit.map((event) => (
                 <li key={event.id}>
-                  {new Date(event.changed_at).toLocaleString("pt-BR")} · {event.operation === "INSERT" ? "Cadastro" : "Alteração"} · {event.previous_status ?? "—"} → {event.new_status}
+                  {new Date(event.changed_at).toLocaleString("pt-BR")} · {event.operation === "INSERT" ? "Cadastro" : event.operation === "MERGE" ? "Duplicata mesclada" : "Alteração"}
+                  {event.operation === "MERGE" ? ` · ${event.details ?? ""}` : ` · ${event.previous_status ?? "—"} → ${event.new_status}`}
                   {event.changed_columns.length ? ` · Campos: ${event.changed_columns.join(", ")}` : ""}
                   {event.actor_id ? ` · ${event.actor_id}` : ""}
                 </li>
