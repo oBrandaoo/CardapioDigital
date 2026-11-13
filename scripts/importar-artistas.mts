@@ -9,7 +9,8 @@
 // só metadados (título e artista), sem cifra, versão "Original", duplicatas
 // ignoradas pelo índice único do banco e intervalo mínimo de 1,1 s entre chamadas.
 // Títulos perdem sufixos de versão ("(Ao Vivo)", "- Remastered"), participações
-// saem do artista e gravações coletivas (mais de 3 artistas) ou medleys são
+// saem do artista e gravações coletivas (mais de 3 artistas), medleys ou com
+// título/artista fora do alfabeto latino (traduções em cirílico etc.) são
 // puladas (src/lib/catalog/recording-metadata.ts).
 // Metadados do MusicBrainz não autorizam publicação: tudo entra como pendente.
 //
@@ -205,12 +206,12 @@ async function main() {
     totalSkipped += skipped;
     totalInvalid += invalid;
     totalFiltered += filtered;
-    console.log(`✔ ${prefix} → ${artist.name}: ${fmt(imported)} novas, ${fmt(skipped)} repetidas, ${fmt(filtered)} coletivas/medleys, ${fmt(invalid)} inválidas`);
+    console.log(`✔ ${prefix} → ${artist.name}: ${fmt(imported)} novas, ${fmt(skipped)} repetidas, ${fmt(filtered)} coletivas/medleys/não latinas, ${fmt(invalid)} inválidas`);
   }
 
   console.log("\nResumo");
   if (dryRun) console.log(`  ${doneMbids.size} artista(s) identificados · ${fmt(totalRecordings)} gravações no MusicBrainz (antes de remover repetidas)`);
-  else console.log(`  ${fmt(totalImported)} músicas novas como pendentes · ${fmt(totalSkipped)} repetidas · ${fmt(totalFiltered)} coletivas/medleys · ${fmt(totalInvalid)} inválidas`);
+  else console.log(`  ${fmt(totalImported)} músicas novas como pendentes · ${fmt(totalSkipped)} repetidas · ${fmt(totalFiltered)} coletivas/medleys/não latinas · ${fmt(totalInvalid)} inválidas`);
   if (pendingReview.length) console.log(`  ${pendingReview.length} artista(s) precisam de MBID manual: ${pendingReview.join(", ")}`);
   if (!dryRun && totalImported) console.log("  Revise em /admin/catalogo?situacao=pending");
 }

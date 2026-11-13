@@ -34,6 +34,16 @@ export function isMedleyTitle(title: string): boolean {
   return /\s\/\s/.test(title) || medleyPattern.test(fold(title));
 }
 
+// A letter from any script other than Latin (Cyrillic, Greek, CJK...). MusicBrainz
+// stores translated/transliterated titles ("Обнимали Меня" by "Жоао Боско") that
+// nobody in a Brazilian venue would search for.
+const nonLatinLetter = /(?=\p{L})\P{Script=Latin}/u;
+
+/** True when the title or artist uses letters outside the Latin alphabet. */
+export function hasNonLatinLetters(value: string): boolean {
+  return nonLatinLetter.test(value);
+}
+
 export type ArtistCredit = { name: string; joinphrase: string };
 
 /**
@@ -59,7 +69,7 @@ export type RecordingMetadata = {
   title: string;
   artist: string;
   valid: boolean;
-  reason: "" | "invalid" | "collective" | "medley";
+  reason: "" | "invalid" | "collective" | "medley" | "non-latin";
 };
 
 export function prepareRecording(rawTitle: string, credits: ArtistCredit[]): RecordingMetadata {
@@ -69,6 +79,7 @@ export function prepareRecording(rawTitle: string, credits: ArtistCredit[]): Rec
   if (!title || title.length > 160 || !artist || artist.length > 160) reason = "invalid";
   else if (creditCount > MAX_CREDITED_ARTISTS) reason = "collective";
   else if (isMedleyTitle(rawTitle)) reason = "medley";
+  else if (hasNonLatinLetters(title) || hasNonLatinLetters(artist)) reason = "non-latin";
   return { title, artist, valid: reason === "", reason };
 }
 
